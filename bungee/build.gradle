@@ -15,6 +15,6 @@ dependencies {
 
 shadowJar {
     manifest {
-        attributes 'Main-Class': 'ru.nanit.limbo.NanoLimbo'
+        attributes 'Main-Class': 'ua.nanit.limbo.NanoLimbo'
     }
 }
