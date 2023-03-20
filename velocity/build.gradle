@@ -1,4 +1,4 @@
-group 'com.ubivashka.limbo'
+group 'com.bivashy.limbo'
 
 repositories {
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
