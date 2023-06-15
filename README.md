@@ -1,20 +1,20 @@
 ## NanoLimbo
 
-This is lightweight minecraft limbo server, written on Java with Netty.
+This is a lightweight minecraft limbo server, written on Java with Netty.
 The main goal of the project is maximum simplicity with a minimum number of sent and processed packets.
 This limbo is empty, there are no ability to set schematic building since
 this is not necessary. You can send useful information in chat or BossBar.
 
-No plugins, no logs. The server is fully clear. It only able keep a lot of players while the main server is down.
+No plugins, no logs. The server is fully clear. It is able keep a lot of players while the main server is down.
 
 The general features:
-* High performance. The server not saves and not cached any useless (for limbo) data.
+* High performance. The server does not save or cache any useless (for limbo) data.
 * Doesn't spawn threads per player. Uses fixed threads pool.
 * Support for **BungeeCord** and **Velocity** info forwarding.
 * Support for [BungeeGuard](https://www.spigotmc.org/resources/79601/) handshake format.
 * Multiple versions support.
 * Fully configurable.
-* Lightweight. App size around **2MB.**
+* Lightweight. Software size around **2MB.**
 
 ![](https://i.imgur.com/sT8p1Gz.png)
 
@@ -36,7 +36,7 @@ Symbol `X` means all minor versions.
 - [x] 1.18.X
 - [x] 1.19.X
 
-The server **doesn't** support snapshots.
+The server **doesn't** support snapshot versions.
 
 ### Commands
 
@@ -51,12 +51,12 @@ Note, that it also will be closed correctly if you just press `Ctrl+C`.
 
 The installation process is simple.
 
-1. Download the latest version of program **[here](https://github.com/Nan1t/NanoLimbo/releases)**
-2. Put jar file in the folder you want.
-3. Create a start script as you did it for Bukkit or BungeeCord with command like this:
+1. Download the latest version of the software **[here](https://github.com/Nan1t/NanoLimbo/releases)**
+2. Put the jar file in your server's main directory
+3. Create a start script like you did for Bungeecord / Velocity:
    `java -jar NanoLimbo-<version>.jar`
-4. The server will create `settings.yml` file. It's a server configuration.
-5. Configure it as you want and restart server.
+4. The server will create the `settings.yml` file. You can configure the server here.
+5. Configure it to your liking and restart the server.
 
 ### About player info forwarding
 
@@ -74,8 +74,8 @@ Then add your tokens to `tokens` list.
 
 ### Contributing
 
-You can create pull request, if you found some bug, optimization ability, or you want to add some functional,
-which is suitable for limbo server and won't significantly load the server.
+You can create pull request, if you find bugs, ways for optimization, or you want to add some functional,
+which is suitable for limbo server and won't significantly bloat the server.
 
 All PR's should be targeted to the `dev` branch to keep the `main` stable and clear.
 
