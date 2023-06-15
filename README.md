@@ -37,7 +37,7 @@ Symbol `X` means all minor versions.
 - [x] 1.19.X
 - [x] 1.20-1.20.1
 
-The server **doesn't** support snapshots.
+The server **doesn't** support snapshot versions.
 
 ### Commands
 
