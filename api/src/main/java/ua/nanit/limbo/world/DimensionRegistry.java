@@ -42,6 +42,7 @@ public final class DimensionRegistry {
     private CompoundBinaryTag codec_1_19;
     private CompoundBinaryTag codec_1_19_1;
     private CompoundBinaryTag codec_1_19_4;
+    private CompoundBinaryTag codec_1_20;
     private CompoundBinaryTag oldCodec;
 
     public DimensionRegistry(ClassLoader classLoader) {
@@ -68,6 +69,10 @@ public final class DimensionRegistry {
         return codec_1_19_4;
     }
 
+    public CompoundBinaryTag getCodec_1_20() {
+        return codec_1_20;
+    }
+
     public CompoundBinaryTag getOldCodec() {
         return oldCodec;
     }
@@ -86,6 +91,7 @@ public final class DimensionRegistry {
         codec_1_19 = readCodecFile("/dimension/codec_1_19.snbt");
         codec_1_19_1 = readCodecFile("/dimension/codec_1_19_1.snbt");
         codec_1_19_4 = readCodecFile("/dimension/codec_1_19_4.snbt");
+        codec_1_20 = readCodecFile("/dimension/codec_1_20.snbt");
         // On 1.16-1.16.1 different codec format
         oldCodec = readCodecFile("/dimension/codec_old.snbt");
 
