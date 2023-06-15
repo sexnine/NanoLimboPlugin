@@ -15,6 +15,10 @@ maxPlayers: 100
 ping:
   description: '{"text": "&9NanoLimbo"}'
   version: 'NanoLimbo'
+  # Return static protocol version number in ping result
+  # By default, its -1 to return the client version, if it supported
+  # https://wiki.vg/Protocol_version_numbers
+  protocol: -1
 
 # Available dimensions: OVERWORLD, NETHER, THE_END
 dimension: THE_END
