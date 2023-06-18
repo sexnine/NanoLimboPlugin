@@ -36,14 +36,13 @@ CommandHandler<Command> commandHandler = new ConsoleCommandHandler();
 LimboServer server = new LimboServer(config, commandHandler, getClass().getClassLoader());
 server.start();
 
-// When you done
+// When you are done
 server.stop();
 ```
 Here we are passing 3 arguments:
 1. LimboConfig - Configures limbo server, defines `SocketAddress`, join message, title, dimension type, and etc.
-2. CommandHandler - Simple CommandHandler where limbo "registers" all its commands. Useful for console only, redundant for Bukkit, Bungee
-3. ClassLoader - Used only for loading dummy dimension files from `resources`. It loads all dimensions from `dimension` folder in [resources](https://github.com/bivashy/NanoLimboPlugin/tree/main/api/src/main/resources/dimension)
-
+2. CommandHandler - Simple CommandHandler. It used by limbo for registering commands. Useful for console only, redundant for Bukkit, Bungee, and other platforms.
+3. ClassLoader - used only for loading dummy dimension files from the "resources" directory. It loads all dimensions from the "dimension" folder, which can be found at [this link](https://github.com/bivashy/NanoLimboPlugin/tree/main/api/src/main/resources/dimension).
 ---
 
 If you don't want to create or load config file, just implement `LimboConfig` interface, just like that:
@@ -106,7 +105,11 @@ public class CustomCommandHandler implements CommandHandler<Command> {
 }
 ```
 
-Then just pass to the LimboServer
+Then just pass to the LimboServer:
+```java
+CommandHandler<Command> commandHandler = new CustomCommandHandler();
+LimboServer server = new LimboServer(config, commandHandler, getClass().getClassLoader()); 
+```
 ## NanoLimbo
 
 This is a lightweight Minecraft limbo server, written in Java with Netty.
