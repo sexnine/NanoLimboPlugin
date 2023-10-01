@@ -69,8 +69,8 @@ public final class PacketSnapshots {
     private PacketSnapshot packetTitleLegacySubtitle;
     private PacketSnapshot packetTitleLegacyTimes;
 
-    public static PacketSnapshot PACKET_REGISTRY_DATA;
-    public static PacketSnapshot PACKET_FINISH_CONFIGURATION;
+    private PacketSnapshot packetRegistryData;
+    private PacketSnapshot packetFinishConfiguration;
 
     public PacketSnapshots(LimboServer server) {
         final String username = server.getConfig().getPingData().getVersion();
@@ -197,8 +197,8 @@ public final class PacketSnapshots {
         PacketRegistryData packetRegistryData = new PacketRegistryData();
         packetRegistryData.setDimensionRegistry(server.getDimensionRegistry());
 
-        PACKET_REGISTRY_DATA = PacketSnapshot.of(packetRegistryData);
-        PACKET_FINISH_CONFIGURATION = PacketSnapshot.of(new PacketFinishConfiguration());
+        this.packetRegistryData = PacketSnapshot.of(packetRegistryData);
+        packetFinishConfiguration = PacketSnapshot.of(new PacketFinishConfiguration());
     }
 
     public PacketSnapshot getPacketLoginSuccess() {
@@ -272,4 +272,13 @@ public final class PacketSnapshots {
     public PacketSnapshot getPacketTitleLegacyTimes() {
         return packetTitleLegacyTimes;
     }
+
+    public PacketSnapshot getPacketRegistryData() {
+        return packetRegistryData;
+    }
+
+    public PacketSnapshot getPacketFinishConfiguration() {
+        return packetFinishConfiguration;
+    }
+
 }
