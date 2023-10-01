@@ -289,19 +289,24 @@ public final class YamlLimboConfig implements LimboConfig {
         return workerGroupSize;
     }
 
+    @Override
     public boolean isUseTrafficLimits() {
         return useTrafficLimits;
     }
 
+    @Override
     public int getMaxPacketSize() {
         return maxPacketSize;
     }
 
+    @Override
     public int getMaxPacketsPerSec() {
         return maxPacketsPerSec;
     }
 
+    @Override
     public int getMaxBytesPerSec() {
         return maxBytesPerSec;
     }
+
 }

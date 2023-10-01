@@ -55,4 +55,13 @@ public interface LimboConfig {
     int getBossGroupSize();
 
     int getWorkerGroupSize();
+
+    boolean isUseTrafficLimits();
+
+    int getMaxPacketSize();
+
+    int getMaxPacketsPerSec();
+
+    int getMaxBytesPerSec();
+
 }
