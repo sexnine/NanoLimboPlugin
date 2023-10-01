@@ -57,7 +57,8 @@ public final class Logger {
 
     public static void print(Level level, Object msg, Throwable t, Object... args) {
         if (debugLevel >= level.getIndex()) {
-            System.out.printf("%s: %s%n", getPrefix(level), String.format(msg.toString(), args));
+            String output = String.format("%s: %s", getPrefix(level), String.format(msg.toString(), args));
+            System.out.print(output);
             if (t != null) t.printStackTrace();
         }
     }
