@@ -56,12 +56,20 @@ public interface LimboConfig {
 
     int getWorkerGroupSize();
 
-    boolean isUseTrafficLimits();
+    default boolean isUseTrafficLimits() {
+        return false;
+    }
 
-    int getMaxPacketSize();
+    default int getMaxPacketSize() {
+        return -1;
+    }
 
-    int getMaxPacketsPerSec();
+    default int getMaxPacketsPerSec() {
+        return -1;
+    }
 
-    int getMaxBytesPerSec();
+    default int getMaxBytesPerSec() {
+        return -1;
+    }
 
 }
