@@ -42,6 +42,7 @@ import ua.nanit.limbo.connection.pipeline.PacketDecoder;
 import ua.nanit.limbo.connection.pipeline.PacketEncoder;
 import ua.nanit.limbo.protocol.ByteMessage;
 import ua.nanit.limbo.protocol.Packet;
+import ua.nanit.limbo.protocol.PacketSnapshot;
 import ua.nanit.limbo.protocol.packets.login.PacketDisconnect;
 import ua.nanit.limbo.protocol.packets.play.PacketKeepAlive;
 import ua.nanit.limbo.protocol.registry.State;
@@ -176,6 +177,14 @@ public class ClientConnection extends ChannelInboundHandlerAdapter {
 
             if (server.getPacketSnapshots().getPacketHeaderAndFooter() != null && clientVersion.moreOrEqual(Version.V1_8))
                 writePacket(server.getPacketSnapshots().getPacketHeaderAndFooter());
+
+            if (clientVersion.moreOrEqual(Version.V1_20_3)) {
+                writePacket(PacketSnapshots.PACKET_START_WAITING_CHUNKS);
+
+                for (PacketSnapshot chunk : PacketSnapshots.PACKETS_EMPTY_CHUNKS) {
+                    writePacket(chunk);
+                }
+            }
 
             sendKeepAlive();
         };

@@ -25,6 +25,7 @@ import ua.nanit.limbo.protocol.packets.login.PacketLoginSuccess;
 import ua.nanit.limbo.protocol.packets.play.*;
 import ua.nanit.limbo.server.LimboServer;
 import ua.nanit.limbo.server.data.Title;
+import ua.nanit.limbo.util.NbtMessageUtil;
 import ua.nanit.limbo.util.UuidUtil;
 import ua.nanit.limbo.protocol.packets.play.PacketBossBar;
 import ua.nanit.limbo.protocol.packets.play.PacketChatMessage;
@@ -40,7 +41,9 @@ import ua.nanit.limbo.protocol.packets.play.PacketTitleSetSubTitle;
 import ua.nanit.limbo.protocol.packets.play.PacketTitleSetTitle;
 import ua.nanit.limbo.protocol.packets.play.PacketTitleTimes;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -71,6 +74,9 @@ public final class PacketSnapshots {
 
     private PacketSnapshot packetRegistryData;
     private PacketSnapshot packetFinishConfiguration;
+
+    private List<PacketSnapshot> packetsEmptyChunks;
+    private PacketSnapshot packetStartWaitingChunks;
 
     public PacketSnapshots(LimboServer server) {
         final String username = server.getConfig().getPingData().getVersion();
@@ -132,8 +138,8 @@ public final class PacketSnapshots {
 
         if (server.getConfig().isUseHeaderAndFooter()) {
             PacketPlayerListHeader header = new PacketPlayerListHeader();
-            header.setHeader(server.getConfig().getPlayerListHeader());
-            header.setFooter(server.getConfig().getPlayerListFooter());
+            header.setHeader(NbtMessageUtil.create(server.getConfig().getPlayerListHeader()));
+            header.setFooter(NbtMessageUtil.create(server.getConfig().getPlayerListFooter()));
             packetHeaderAndFooter = PacketSnapshot.of(header);
         }
 
@@ -146,7 +152,7 @@ public final class PacketSnapshots {
 
         if (server.getConfig().isUseJoinMessage()) {
             PacketChatMessage joinMessage = new PacketChatMessage();
-            joinMessage.setJsonData(server.getConfig().getJoinMessage());
+            joinMessage.setMessage(NbtMessageUtil.create(server.getConfig().getJoinMessage()));
             joinMessage.setPosition(PacketChatMessage.PositionLegacy.SYSTEM_MESSAGE);
             joinMessage.setSender(UUID.randomUUID());
             packetJoinMessage = PacketSnapshot.of(joinMessage);
@@ -199,6 +205,28 @@ public final class PacketSnapshots {
 
         this.packetRegistryData = PacketSnapshot.of(packetRegistryData);
         packetFinishConfiguration = PacketSnapshot.of(new PacketFinishConfiguration());
+
+        PacketGameEvent packetGameEvent = new PacketGameEvent();
+        packetGameEvent.setType((byte) 13); // Waiting for chunks type
+        packetGameEvent.setValue(0);
+        packetStartWaitingChunks = PacketSnapshot.of(packetGameEvent);
+
+        int chunkXOffset = (int) 0 >> 4; // Default x position is 0
+        int chunkZOffset = (int) 0 >> 4; // Default z position is 0
+        int chunkEdgeSize = 1; // TODO Make configurable?
+
+        List<PacketSnapshot> emptyChunks = new ArrayList<>();
+        // Make multiple chunks for edges
+        for (int chunkX = chunkXOffset - chunkEdgeSize; chunkX <= chunkXOffset + chunkEdgeSize; ++chunkX) {
+            for (int chunkZ = chunkZOffset - chunkEdgeSize; chunkZ <= chunkZOffset + chunkEdgeSize; ++chunkZ) {
+                PacketEmptyChunk packetEmptyChunk = new PacketEmptyChunk();
+                packetEmptyChunk.setX(chunkX);
+                packetEmptyChunk.setZ(chunkZ);
+
+                emptyChunks.add(PacketSnapshot.of(packetEmptyChunk));
+            }
+        }
+        packetsEmptyChunks = emptyChunks;
     }
 
     public PacketSnapshot getPacketLoginSuccess() {
@@ -279,6 +307,14 @@ public final class PacketSnapshots {
 
     public PacketSnapshot getPacketFinishConfiguration() {
         return packetFinishConfiguration;
+    }
+
+    public List<PacketSnapshot> getPacketsEmptyChunks() {
+        return packetsEmptyChunks;
+    }
+
+    public PacketSnapshot getPacketStartWaitingChunks() {
+        return packetStartWaitingChunks;
     }
 
 }

@@ -147,7 +147,7 @@ Symbol `X` means all minor versions.
 - [x] 1.17.X
 - [x] 1.18.X
 - [x] 1.19.X
-- [x] 1.20-1.20.2
+- [x] 1.20-1.20.4
 
 The server **doesn't** support snapshot versions.
 
@@ -189,8 +189,6 @@ Then add your tokens to `tokens` list.
 
 Feel free to create a pull request if you found some bug or optimization opportunity, or if you want
 to add some functionality that is suitable for a limbo server and won't significantly load the server.
-
-All PRs should target the `dev` branch to keep the `main` branch stable and clean.
 
 ### Building
 
