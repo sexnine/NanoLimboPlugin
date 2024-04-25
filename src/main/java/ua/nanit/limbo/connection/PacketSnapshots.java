@@ -17,6 +17,9 @@
 
 package ua.nanit.limbo.connection;
 
+import net.kyori.adventure.nbt.BinaryTag;
+import net.kyori.adventure.nbt.CompoundBinaryTag;
+import net.kyori.adventure.nbt.ListBinaryTag;
 import ua.nanit.limbo.LimboConstants;
 import ua.nanit.limbo.protocol.PacketSnapshot;
 import ua.nanit.limbo.protocol.packets.configuration.PacketFinishConfiguration;
@@ -27,6 +30,7 @@ import ua.nanit.limbo.server.LimboServer;
 import ua.nanit.limbo.server.data.Title;
 import ua.nanit.limbo.util.NbtMessageUtil;
 import ua.nanit.limbo.util.UuidUtil;
+import ua.nanit.limbo.world.Dimension;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,6 +64,7 @@ public final class PacketSnapshots {
     public static PacketSnapshot PACKET_TITLE_LEGACY_TIMES;
 
     public static PacketSnapshot PACKET_REGISTRY_DATA;
+    public static List<PacketSnapshot> PACKETS_REGISTRY_DATA;
     public static PacketSnapshot PACKET_FINISH_CONFIGURATION;
 
     public static List<PacketSnapshot> PACKETS_EMPTY_CHUNKS;
@@ -193,6 +198,38 @@ public final class PacketSnapshots {
         packetRegistryData.setDimensionRegistry(server.getDimensionRegistry());
 
         PACKET_REGISTRY_DATA = PacketSnapshot.of(packetRegistryData);
+
+        Dimension dimension1_20_5 = server.getDimensionRegistry().getDimension_1_20_5();
+        List<PacketSnapshot> packetRegistries = new ArrayList<>();
+        CompoundBinaryTag dimensionTag = dimension1_20_5.getData();
+        for (String registryType : dimensionTag.keySet()) {
+            CompoundBinaryTag compundRegistryType = dimensionTag.getCompound(registryType);
+
+            PacketRegistryData registryData = new PacketRegistryData();
+            registryData.setDimensionRegistry(server.getDimensionRegistry());
+
+            ListBinaryTag values = compundRegistryType.getList("value");
+            registryData.setMetadataWriter((message, version) -> {
+                message.writeString(registryType);
+
+                message.writeVarInt(values.size());
+                for (BinaryTag entry : values) {
+                    CompoundBinaryTag entryTag = (CompoundBinaryTag) entry;
+
+                    String name = entryTag.getString("name");
+                    CompoundBinaryTag element = entryTag.getCompound("element");
+
+                    message.writeString(name);
+                    message.writeBoolean(true);
+                    message.writeNamelessCompoundTag(element);
+                }
+            });
+
+            packetRegistries.add(PacketSnapshot.of(registryData));
+        }
+
+        PACKETS_REGISTRY_DATA = packetRegistries;
+
         PACKET_FINISH_CONFIGURATION = PacketSnapshot.of(new PacketFinishConfiguration());
 
         PacketGameEvent packetGameEvent = new PacketGameEvent();

@@ -115,7 +115,7 @@ public class ClientConnection extends ChannelInboundHandlerAdapter {
 
     public void handlePacket(Object packet) {
         if (packet instanceof Packet) {
-            ((Packet)packet).handle(this, server);
+            ((Packet) packet).handle(this, server);
         }
     }
 
@@ -199,7 +199,14 @@ public class ClientConnection extends ChannelInboundHandlerAdapter {
 
         if (PacketSnapshots.PACKET_PLUGIN_MESSAGE != null)
             writePacket(PacketSnapshots.PACKET_PLUGIN_MESSAGE);
-        writePacket(PacketSnapshots.PACKET_REGISTRY_DATA);
+
+        if (clientVersion.moreOrEqual(Version.V1_20_5)) {
+            for (PacketSnapshot packet : PacketSnapshots.PACKETS_REGISTRY_DATA) {
+                writePacket(packet);
+            }
+        } else {
+            writePacket(PacketSnapshots.PACKET_REGISTRY_DATA);
+        }
 
         sendPacket(PacketSnapshots.PACKET_FINISH_CONFIGURATION);
     }
@@ -272,7 +279,7 @@ public class ClientConnection extends ChannelInboundHandlerAdapter {
     }
 
     public void setAddress(String host) {
-        this.address = new InetSocketAddress(host, ((InetSocketAddress)this.address).getPort());
+        this.address = new InetSocketAddress(host, ((InetSocketAddress) this.address).getPort());
     }
 
     boolean checkBungeeGuardHandshake(String handshake) {
@@ -333,7 +340,7 @@ public class ClientConnection extends ChannelInboundHandlerAdapter {
             byte[] mySignature = mac.doFinal(data);
             if (!MessageDigest.isEqual(signature, mySignature))
                 return false;
-        } catch (InvalidKeyException |java.security.NoSuchAlgorithmException e) {
+        } catch (InvalidKeyException | java.security.NoSuchAlgorithmException e) {
             throw new AssertionError(e);
         }
         int version = buf.readVarInt();
