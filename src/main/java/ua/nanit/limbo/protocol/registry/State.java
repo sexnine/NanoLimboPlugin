@@ -99,7 +99,7 @@ public enum State {
             clientBound.register(
                     PacketKeepAlive::new,
                     map(0x03, V1_20_2, V1_20_3),
-                    map(0x05, V1_20_5, V1_20_5)
+                    map(0x04, V1_20_5, V1_20_5)
             );
             clientBound.register(
                     PacketRegistryData::new,
