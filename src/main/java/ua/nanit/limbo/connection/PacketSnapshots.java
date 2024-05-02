@@ -52,7 +52,7 @@ public final class PacketSnapshots {
     public static PacketSnapshot PACKET_HEADER_AND_FOOTER;
 
     public static PacketSnapshot PACKET_PLAYER_POS_AND_LOOK_LEGACY;
-    // For 1.19 we need to spawn player outside world to avoid stuck in terrain loading
+    // For 1.19 we need to spawn player outside the world to avoid stuck in terrain loading
     public static PacketSnapshot PACKET_PLAYER_POS_AND_LOOK;
 
     public static PacketSnapshot PACKET_TITLE_TITLE;

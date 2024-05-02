@@ -264,10 +264,6 @@ public class ClientConnection extends ChannelInboundHandlerAdapter {
         encoder.updateState(state);
     }
 
-    public void updateDecoderState(State state) {
-        decoder.updateState(state);
-    }
-
     public void updateEncoderState(State state) {
         encoder.updateState(state);
     }
