@@ -21,7 +21,7 @@ import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.nbt.ListBinaryTag;
 import net.kyori.adventure.nbt.TagStringIO;
 import ua.nanit.limbo.server.LimboServer;
-import ua.nanit.limbo.server.Logger;
+import ua.nanit.limbo.server.Log;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -118,7 +118,7 @@ public final class DimensionRegistry {
             case "the_end":
                 return new Dimension(1, "minecraft:the_end", theEnd);
             default:
-                Logger.warning("Undefined dimension type: '%s'. Using THE_END as default", def);
+                Log.warning("Undefined dimension type: '%s'. Using THE_END as default", def);
                 return new Dimension(1, "minecraft:the_end", theEnd);
         }
     }
@@ -132,7 +132,7 @@ public final class DimensionRegistry {
             case "the_end":
                 return new Dimension(3, "minecraft:the_end", tag);
             default:
-                Logger.warning("Undefined dimension type: '%s'. Using THE_END as default", def);
+                Log.warning("Undefined dimension type: '%s'. Using THE_END as default", def);
                 return new Dimension(3, "minecraft:the_end", tag);
         }
     }

@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.jetbrains.annotations.NotNull;
-import ua.nanit.limbo.server.Logger;
+import ua.nanit.limbo.server.Log;
 
 import java.util.Arrays;
 
@@ -45,7 +45,7 @@ public class ChannelTrafficHandler extends ChannelInboundHandlerAdapter {
 
     private void closeConnection(ChannelHandlerContext ctx, String reason, Object... args) {
         ctx.close();
-        Logger.info(reason, args);
+        Log.info(reason, args);
     }
 
     private static class PacketBucket {

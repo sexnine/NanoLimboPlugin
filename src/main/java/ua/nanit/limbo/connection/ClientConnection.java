@@ -36,7 +36,7 @@ import ua.nanit.limbo.protocol.packets.play.PacketKeepAlive;
 import ua.nanit.limbo.protocol.registry.State;
 import ua.nanit.limbo.protocol.registry.Version;
 import ua.nanit.limbo.server.LimboServer;
-import ua.nanit.limbo.server.Logger;
+import ua.nanit.limbo.server.Log;
 import ua.nanit.limbo.util.UuidUtil;
 
 import javax.crypto.Mac;
@@ -104,7 +104,7 @@ public class ClientConnection extends ChannelInboundHandlerAdapter {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         if (channel.isActive()) {
-            Logger.error("Unhandled exception: ", cause);
+            Log.error("Unhandled exception: ", cause);
         }
     }
 
@@ -312,7 +312,7 @@ public class ClientConnection extends ChannelInboundHandlerAdapter {
         setAddress(socketAddressHostname);
         gameProfile.setUuid(uuid);
 
-        Logger.debug("Successfully verified BungeeGuard token");
+        Log.debug("Successfully verified BungeeGuard token");
 
         return true;
     }
