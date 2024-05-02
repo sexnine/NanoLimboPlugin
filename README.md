@@ -84,7 +84,7 @@ to add some functionality that is suitable for a limbo server and won't signific
 
 Required software:
 
-* JDK 1.8+
+* JDK 11+
 * Gradle 7+ (optional)
 
 To build a minimized jar, go to the project root directory and run in the terminal:
