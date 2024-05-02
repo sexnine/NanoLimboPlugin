@@ -5,11 +5,11 @@ The main goal of this project is maximum simplicity with a minimum number of sen
 The limbo is empty; there is no ability to set a schematic building since this is not necessary.
 You can send useful information via chat or boss bar.
 
-No plugins, no logs. The server is fully clear. It is only able to keep a lot of players while the main server is down.
+The server is fully clear. It is only able to keep a lot of players while the main server is down.
 
 General features:
 * High performance. The server doesn't save or cache any useless (for limbo) data.
-* Doesn't spawn threads per player. Uses a fixed thread pool.
+* Doesn't spawn threads per player. Use a fixed thread pool.
 * Support for **BungeeCord** and **Velocity** info forwarding.
 * Support for [BungeeGuard](https://www.spigotmc.org/resources/79601/) handshake format.
 * Multiple versions support.
