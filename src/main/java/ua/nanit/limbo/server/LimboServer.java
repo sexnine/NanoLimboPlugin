@@ -72,14 +72,13 @@ public final class LimboServer {
     }
 
     public void start() throws Exception {
-        Log.info("Starting server...");
-
-        ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.DISABLED);
-
         config = new LimboConfig(Paths.get("./"));
         config.load();
 
         Log.setLevel(config.getDebugLevel());
+        Log.info("Starting server...");
+
+        ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.DISABLED);
 
         packetHandler = new PacketHandler(this);
         dimensionRegistry = new DimensionRegistry(this);

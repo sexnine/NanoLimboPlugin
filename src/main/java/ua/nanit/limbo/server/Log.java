@@ -57,11 +57,16 @@ public final class Log {
 
     static void setLevel(int level) {
         debugLevel = level;
-        Logger logback = (Logger) LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
+
+        Logger logback = getRootLogger();
 
         if (logback != null) {
             logback.setLevel(convertLevel(level));
         }
+    }
+
+    private static Logger getRootLogger() {
+        return (Logger) LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
     }
 
     private static ch.qos.logback.classic.Level convertLevel(int level) {
