@@ -50,6 +50,8 @@ Note that the server also will be closed correctly if you just press `Ctrl+C`.
 
 ### Installation
 
+Required software: JRE 11+
+
 The installation process is simple.
 
 1. Download the latest version of the program [**here**](https://github.com/Nan1t/NanoLimbo/releases).
