@@ -84,10 +84,10 @@ public final class LimboServer {
     }
 
     public void start() throws Exception {
-        Logger.info("Starting server...");
+        Log.setLevel(config.getDebugLevel());
+        Log.info("Starting server...");
 
         ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.DISABLED);
-
         packetHandler = new PacketHandler(this);
         dimensionRegistry = new DimensionRegistry(classLoader);
         dimensionRegistry.load(config.getDimensionType());
@@ -99,9 +99,9 @@ public final class LimboServer {
 
         keepAliveTask = workerGroup.scheduleAtFixedRate(this::broadcastKeepAlive, 0L, 5L, TimeUnit.SECONDS);
 
-        Logger.info("Server started on %s", config.getAddress());
+        Log.info("Server started on %s", config.getAddress());
 
-        Logger.setLevel(config.getDebugLevel());
+        Log.setLevel(config.getDebugLevel());
 
         System.gc();
         running = true;
@@ -114,12 +114,12 @@ public final class LimboServer {
             bossGroup = new EpollEventLoopGroup(config.getBossGroupSize());
             workerGroup = new EpollEventLoopGroup(config.getWorkerGroupSize());
             channelClass = EpollServerSocketChannel.class;
-            Logger.debug("Using Epoll transport type");
+            Log.debug("Using Epoll transport type");
         } else {
             bossGroup = new NioEventLoopGroup(config.getBossGroupSize());
             workerGroup = new NioEventLoopGroup(config.getWorkerGroupSize());
             channelClass = NioServerSocketChannel.class;
-            Logger.debug("Using Java NIO transport type");
+            Log.debug("Using Java NIO transport type");
         }
 
         new ServerBootstrap()
@@ -136,7 +136,7 @@ public final class LimboServer {
     }
 
     public void stop() {
-        Logger.info("Stopping server...");
+        Log.info("Stopping server...");
 
         if (keepAliveTask != null) {
             keepAliveTask.cancel(true);
@@ -151,7 +151,7 @@ public final class LimboServer {
         }
 
         running = false;
-        Logger.info("Server stopped, Goodbye!");
+        Log.info("Server stopped, Goodbye!");
     }
 
     public boolean isRunning() {

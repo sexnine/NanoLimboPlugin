@@ -20,12 +20,12 @@ package ua.nanit.limbo.server;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-public final class Logger {
+public final class Log {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("hh:mm:ss");
     private static int debugLevel = Level.INFO.getIndex();
 
-    private Logger() {}
+    private Log() {}
 
     public static int getLevel() {
         return debugLevel;

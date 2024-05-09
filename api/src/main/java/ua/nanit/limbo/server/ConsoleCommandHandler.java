@@ -28,12 +28,12 @@ public final class ConsoleCommandHandler extends Thread implements CommandHandle
             try {
                 handler.execute();
             } catch(Throwable t) {
-                Logger.error("Cannot execute command:", t);
+                Log.error("Cannot execute command:", t);
             }
             return true;
         }
 
-        Logger.info("Unknown command. Type \"help\" to get commands list");
+        Log.info("Unknown command. Type \"help\" to get commands list");
         return false;
     }
 
@@ -62,7 +62,7 @@ public final class ConsoleCommandHandler extends Thread implements CommandHandle
         register(new CmdHelp(server));
         register(new CmdConn(server));
         register(new CmdMem());
-        register(new CmdStop());
+        register(new CmdStop(server));
         return this;
     }
 }

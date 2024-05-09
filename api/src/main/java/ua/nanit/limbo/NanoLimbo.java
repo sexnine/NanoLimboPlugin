@@ -22,7 +22,7 @@ import java.nio.file.Paths;
 import ua.nanit.limbo.configuration.YamlLimboConfig;
 import ua.nanit.limbo.server.ConsoleCommandHandler;
 import ua.nanit.limbo.server.LimboServer;
-import ua.nanit.limbo.server.Logger;
+import ua.nanit.limbo.server.Log;
 
 public final class NanoLimbo {
 
@@ -35,7 +35,7 @@ public final class NanoLimbo {
             server.start();
             Runtime.getRuntime().addShutdownHook(new Thread(server::stop, "NanoLimbo shutdown thread"));
         } catch(Exception e) {
-            Logger.error("Cannot start server: ", e);
+            Log.error("Cannot start server: ", e);
         }
     }
 

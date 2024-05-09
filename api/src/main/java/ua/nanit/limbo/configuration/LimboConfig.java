@@ -72,4 +72,8 @@ public interface LimboConfig {
         return -1;
     }
 
+    double getInterval();
+
+    double getMaxPacketRate();
+
 }

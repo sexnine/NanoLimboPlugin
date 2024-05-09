@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.nbt.ListBinaryTag;
 import net.kyori.adventure.nbt.TagStringIO;
-import ua.nanit.limbo.server.Logger;
+import ua.nanit.limbo.server.Log;
 
 public final class DimensionRegistry {
 
@@ -36,6 +36,7 @@ public final class DimensionRegistry {
 
     private Dimension defaultDimension_1_16;
     private Dimension defaultDimension_1_18_2;
+    private Dimension dimension_1_20_5;
 
     private CompoundBinaryTag codec_1_16;
     private CompoundBinaryTag codec_1_18_2;
@@ -85,6 +86,10 @@ public final class DimensionRegistry {
         return defaultDimension_1_18_2;
     }
 
+    public Dimension getDimension_1_20_5() {
+        return dimension_1_20_5;
+    }
+
     public void load(String def) throws IOException {
         codec_1_16 = readCodecFile("/dimension/codec_1_16.snbt");
         codec_1_18_2 = readCodecFile("/dimension/codec_1_18_2.snbt");
@@ -97,6 +102,8 @@ public final class DimensionRegistry {
 
         defaultDimension_1_16 = getDefaultDimension(def, codec_1_16);
         defaultDimension_1_18_2 = getDefaultDimension(def, codec_1_18_2);
+
+        dimension_1_20_5 = getModernDimension(def, codec_1_20);
     }
 
     private Dimension getDefaultDimension(String def, CompoundBinaryTag tag) {
@@ -114,8 +121,22 @@ public final class DimensionRegistry {
             case "the_end":
                 return new Dimension(1, "minecraft:the_end", theEnd);
             default:
-                Logger.warning("Undefined dimension type: '%s'. Using THE_END as default", def);
+                Log.warning("Undefined dimension type: '%s'. Using THE_END as default", def);
                 return new Dimension(1, "minecraft:the_end", theEnd);
+        }
+    }
+
+    private Dimension getModernDimension(String def, CompoundBinaryTag tag) {
+        switch (def.toLowerCase()) {
+            case "overworld":
+                return new Dimension(0, "minecraft:overworld", tag);
+            case "the_nether":
+                return new Dimension(2, "minecraft:nether", tag);
+            case "the_end":
+                return new Dimension(3, "minecraft:the_end", tag);
+            default:
+                Log.warning("Undefined dimension type: '%s'. Using THE_END as default", def);
+                return new Dimension(3, "minecraft:the_end", tag);
         }
     }
 
@@ -130,14 +151,11 @@ public final class DimensionRegistry {
     }
 
     private String streamToString(InputStream in) throws IOException {
-        InputStreamReader isReader = new InputStreamReader(in, StandardCharsets.UTF_8);
-        BufferedReader bufReader = new BufferedReader(isReader);
-        String content = bufReader.lines()
-                .collect(Collectors.joining("\n"));
+        try (BufferedReader bufReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
+            String content = bufReader.lines()
+                    .collect(Collectors.joining("\n"));
 
-        isReader.close();
-        bufReader.close();
-
-        return content;
+            return content;
+        }
     }
 }
