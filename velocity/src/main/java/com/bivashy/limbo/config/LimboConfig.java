@@ -15,9 +15,10 @@ import com.bivashy.limbo.NanoLimboVelocity;
 import com.bivashy.limbo.config.model.VelocityLimboServer;
 import com.bivashy.limbo.config.model.VelocityLimboServer.VelocityLimboServerSerializer;
 
-import ua.nanit.limbo.server.Logger;
+import ua.nanit.limbo.server.Log;
 
 public class LimboConfig {
+
     private List<VelocityLimboServer> servers;
     private MessageConfiguration messages;
     private ConfigurationNode root;
@@ -36,15 +37,14 @@ public class LimboConfig {
             servers = root.node("limbos").childrenMap().values().stream().map(node -> {
                 try {
                     return node.get(VelocityLimboServer.class);
-                } catch(SerializationException e) {
-                    e.printStackTrace();
+                } catch (SerializationException e) {
+                    Log.error("Cannot load limbos from configuration", e);
                     return null;
                 }
             }).collect(Collectors.toList());
             messages = new MessageConfiguration(root.node("messages"));
-        } catch(ConfigurateException e) {
-            e.printStackTrace();
-            Logger.warning("Cannot load config.yml");
+        } catch (ConfigurateException e) {
+            Log.warning("Cannot load config.yml", e);
         }
     }
 
@@ -55,4 +55,5 @@ public class LimboConfig {
     public List<VelocityLimboServer> getServers() {
         return Collections.unmodifiableList(servers);
     }
+
 }

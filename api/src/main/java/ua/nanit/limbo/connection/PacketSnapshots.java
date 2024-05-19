@@ -17,6 +17,9 @@
 
 package ua.nanit.limbo.connection;
 
+import net.kyori.adventure.nbt.BinaryTag;
+import net.kyori.adventure.nbt.CompoundBinaryTag;
+import net.kyori.adventure.nbt.ListBinaryTag;
 import ua.nanit.limbo.LimboConstants;
 import ua.nanit.limbo.protocol.PacketSnapshot;
 import ua.nanit.limbo.protocol.packets.configuration.PacketFinishConfiguration;
@@ -40,6 +43,7 @@ import ua.nanit.limbo.protocol.packets.play.PacketTitleLegacy;
 import ua.nanit.limbo.protocol.packets.play.PacketTitleSetSubTitle;
 import ua.nanit.limbo.protocol.packets.play.PacketTitleSetTitle;
 import ua.nanit.limbo.protocol.packets.play.PacketTitleTimes;
+import ua.nanit.limbo.world.Dimension;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -61,7 +65,7 @@ public final class PacketSnapshots {
     private PacketSnapshot packetHeaderAndFooter;
 
     private PacketSnapshot packetPlayerPosAndLookLegacy;
-    // For 1.19 we need to spawn player outside world to avoid stuck in terrain loading
+    // For 1.19 we need to spawn player outside the world to avoid stuck in terrain loading
     private PacketSnapshot packetPlayerPosAndLook;
 
     private PacketSnapshot packetTitleTitle;
@@ -73,6 +77,7 @@ public final class PacketSnapshots {
     private PacketSnapshot packetTitleLegacyTimes;
 
     private PacketSnapshot packetRegistryData;
+    private List<PacketSnapshot> packetsRegistryData;
     private PacketSnapshot packetFinishConfiguration;
 
     private List<PacketSnapshot> packetsEmptyChunks;
@@ -200,10 +205,42 @@ public final class PacketSnapshots {
             packetTitleLegacyTimes = PacketSnapshot.of(legacyTimes);
         }
 
-        PacketRegistryData packetRegistryData = new PacketRegistryData();
-        packetRegistryData.setDimensionRegistry(server.getDimensionRegistry());
+        PacketRegistryData registryData = new PacketRegistryData();
+        registryData.setDimensionRegistry(server.getDimensionRegistry());
 
-        this.packetRegistryData = PacketSnapshot.of(packetRegistryData);
+        packetRegistryData = PacketSnapshot.of(registryData);
+
+        Dimension dimension1_20_5 = server.getDimensionRegistry().getDimension_1_20_5();
+        List<PacketSnapshot> packetRegistries = new ArrayList<>();
+        CompoundBinaryTag dimensionTag = dimension1_20_5.getData();
+        for (String registryType : dimensionTag.keySet()) {
+            CompoundBinaryTag compundRegistryType = dimensionTag.getCompound(registryType);
+
+            registryData = new PacketRegistryData();
+            registryData.setDimensionRegistry(server.getDimensionRegistry());
+
+            ListBinaryTag values = compundRegistryType.getList("value");
+            registryData.setMetadataWriter((message, version) -> {
+                message.writeString(registryType);
+
+                message.writeVarInt(values.size());
+                for (BinaryTag entry : values) {
+                    CompoundBinaryTag entryTag = (CompoundBinaryTag) entry;
+
+                    String name = entryTag.getString("name");
+                    CompoundBinaryTag element = entryTag.getCompound("element");
+
+                    message.writeString(name);
+                    message.writeBoolean(true);
+                    message.writeNamelessCompoundTag(element);
+                }
+            });
+
+            packetRegistries.add(PacketSnapshot.of(registryData));
+        }
+
+        packetsRegistryData = packetRegistries;
+
         packetFinishConfiguration = PacketSnapshot.of(new PacketFinishConfiguration());
 
         PacketGameEvent packetGameEvent = new PacketGameEvent();
@@ -310,11 +347,15 @@ public final class PacketSnapshots {
     }
 
     public List<PacketSnapshot> getPacketsEmptyChunks() {
-        return packetsEmptyChunks;
+        return Collections.unmodifiableList(packetsEmptyChunks);
     }
 
     public PacketSnapshot getPacketStartWaitingChunks() {
         return packetStartWaitingChunks;
+    }
+
+    public List<PacketSnapshot> getPacketsRegistryData() {
+        return Collections.unmodifiableList(packetsRegistryData);
     }
 
 }
