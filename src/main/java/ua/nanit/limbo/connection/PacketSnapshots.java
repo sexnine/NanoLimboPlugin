@@ -199,7 +199,7 @@ public final class PacketSnapshots {
 
         PACKET_REGISTRY_DATA = PacketSnapshot.of(packetRegistryData);
 
-        Dimension dimension1_20_5 = server.getDimensionRegistry().getDimension_1_20_5();
+        Dimension dimension1_20_5 = server.getDimensionRegistry().getDimension_1_21();
         List<PacketSnapshot> packetRegistries = new ArrayList<>();
         CompoundBinaryTag dimensionTag = dimension1_20_5.getData();
         for (String registryType : dimensionTag.keySet()) {
