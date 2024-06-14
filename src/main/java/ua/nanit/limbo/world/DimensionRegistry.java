@@ -160,10 +160,7 @@ public final class DimensionRegistry {
 
     private String streamToString(InputStream in) throws IOException {
         try (BufferedReader bufReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
-            String content = bufReader.lines()
-                    .collect(Collectors.joining("\n"));
-
-            return content;
+            return bufReader.lines().collect(Collectors.joining("\n"));
         }
     }
 }
