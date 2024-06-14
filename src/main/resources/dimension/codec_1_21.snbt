@@ -2788,8 +2788,8 @@
         type: "minecraft:wolf_variant",
         value: [
           {
-            name: "minecraft:painting_variant",
-            id: 172,
+            name: "minecraft:default",
+            id: 0,
             element: {
              wild_texture: "minecraft:entity/wolf/wolf",
              angry_texture: "minecraft:entity/wolf/wolf_angry",
@@ -2803,8 +2803,8 @@
       type: "minecraft:painting_variant",
       value: [
         {
-          name: "minecraft:test",
-          id: 173,
+          name: "minecraft:default",
+          id: 0,
           element: {
             asset_id: "minecraft:backyard",
             height: 3,
