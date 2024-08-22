@@ -14,7 +14,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package ua.nanit.limbo.connection;
 
 import java.net.InetSocketAddress;
@@ -43,12 +42,13 @@ import ua.nanit.limbo.connection.pipeline.PacketDecoder;
 import ua.nanit.limbo.connection.pipeline.PacketEncoder;
 import ua.nanit.limbo.protocol.ByteMessage;
 import ua.nanit.limbo.protocol.Packet;
+import ua.nanit.limbo.protocol.PacketSnapshot;
 import ua.nanit.limbo.protocol.packets.login.PacketDisconnect;
 import ua.nanit.limbo.protocol.packets.play.PacketKeepAlive;
 import ua.nanit.limbo.protocol.registry.State;
 import ua.nanit.limbo.protocol.registry.Version;
 import ua.nanit.limbo.server.LimboServer;
-import ua.nanit.limbo.server.Logger;
+import ua.nanit.limbo.server.Log;
 import ua.nanit.limbo.util.UuidUtil;
 
 public class ClientConnection extends ChannelInboundHandlerAdapter {
@@ -56,14 +56,11 @@ public class ClientConnection extends ChannelInboundHandlerAdapter {
     private final LimboServer server;
     private final Channel channel;
     private final GameProfile gameProfile;
-
     private final PacketDecoder decoder;
     private final PacketEncoder encoder;
-
     private State state;
     private Version clientVersion;
     private SocketAddress address;
-
     private int velocityLoginMessageId = -1;
 
     public ClientConnection(Channel channel, LimboServer server, PacketDecoder decoder, PacketEncoder encoder) {
@@ -87,6 +84,10 @@ public class ClientConnection extends ChannelInboundHandlerAdapter {
         return address;
     }
 
+    public void setAddress(String host) {
+        this.address = new InetSocketAddress(host, ((InetSocketAddress) this.address).getPort());
+    }
+
     public Version getClientVersion() {
         return clientVersion;
     }
@@ -97,7 +98,7 @@ public class ClientConnection extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelInactive(@NotNull ChannelHandlerContext ctx) throws Exception {
-        if (state.equals(State.PLAY)) {
+        if (state.equals(State.PLAY) || state.equals(State.CONFIGURATION)) {
             server.getConnections().removeConnection(this);
         }
         super.channelInactive(ctx);
@@ -106,7 +107,7 @@ public class ClientConnection extends ChannelInboundHandlerAdapter {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         if (channel.isActive()) {
-            Logger.error("Unhandled exception: ", cause);
+            Log.error("Unhandled exception: ", cause);
         }
     }
 
@@ -128,8 +129,19 @@ public class ClientConnection extends ChannelInboundHandlerAdapter {
         }
 
         sendPacket(server.getPacketSnapshots().getPacketLoginSuccess());
-        updateState(State.PLAY);
         server.getConnections().addConnection(this);
+
+        // Preparing for configuration mode
+        if (clientVersion.moreOrEqual(Version.V1_20_2)) {
+            updateEncoderState(State.CONFIGURATION);
+            return;
+        }
+
+        spawnPlayer();
+    }
+
+    public void spawnPlayer() {
+        updateState(State.PLAY);
 
         Runnable sendPlayPackets = () -> {
             writePacket(server.getPacketSnapshots().getPacketJoinGame());
@@ -166,6 +178,14 @@ public class ClientConnection extends ChannelInboundHandlerAdapter {
             if (server.getPacketSnapshots().getPacketHeaderAndFooter() != null && clientVersion.moreOrEqual(Version.V1_8))
                 writePacket(server.getPacketSnapshots().getPacketHeaderAndFooter());
 
+            if (clientVersion.moreOrEqual(Version.V1_20_3)) {
+                writePacket(server.getPacketSnapshots().getPacketStartWaitingChunks());
+
+                for (PacketSnapshot chunk : server.getPacketSnapshots().getPacketsEmptyChunks()) {
+                    writePacket(chunk);
+                }
+            }
+
             sendKeepAlive();
         };
 
@@ -174,6 +194,23 @@ public class ClientConnection extends ChannelInboundHandlerAdapter {
         } else {
             sendPlayPackets.run();
         }
+    }
+
+    public void onLoginAcknowledgedReceived() {
+        updateState(State.CONFIGURATION);
+
+        if (server.getPacketSnapshots().getPacketPluginMessage() != null)
+            writePacket(server.getPacketSnapshots().getPacketPluginMessage());
+
+        if (clientVersion.moreOrEqual(Version.V1_20_5)) {
+            for (PacketSnapshot packet : server.getPacketSnapshots().getPacketsRegistryData()) {
+                writePacket(packet);
+            }
+        } else {
+            writePacket(server.getPacketSnapshots().getPacketRegistryData());
+        }
+
+        sendPacket(server.getPacketSnapshots().getPacketFinishConfiguration());
     }
 
     public void disconnectLogin(String reason) {
@@ -229,14 +266,14 @@ public class ClientConnection extends ChannelInboundHandlerAdapter {
         encoder.updateState(state);
     }
 
+    public void updateEncoderState(State state) {
+        encoder.updateState(state);
+    }
+
     public void updateVersion(Version version) {
         clientVersion = version;
         decoder.updateVersion(version);
         encoder.updateVersion(version);
-    }
-
-    public void setAddress(String host) {
-        this.address = new InetSocketAddress(host, ((InetSocketAddress) this.address).getPort());
     }
 
     boolean checkBungeeGuardHandshake(String handshake) {
@@ -251,7 +288,7 @@ public class ClientConnection extends ChannelInboundHandlerAdapter {
 
         try {
             arr = JsonParser.array().from(split[3]);
-        } catch(JsonParserException e) {
+        } catch (JsonParserException e) {
             return false;
         }
 
@@ -273,7 +310,7 @@ public class ClientConnection extends ChannelInboundHandlerAdapter {
         setAddress(socketAddressHostname);
         gameProfile.setUuid(uuid);
 
-        Logger.debug("Successfully verified BungeeGuard token");
+        Log.debug("Successfully verified BungeeGuard token");
 
         return true;
     }
@@ -297,7 +334,7 @@ public class ClientConnection extends ChannelInboundHandlerAdapter {
             byte[] mySignature = mac.doFinal(data);
             if (!MessageDigest.isEqual(signature, mySignature))
                 return false;
-        } catch(InvalidKeyException | java.security.NoSuchAlgorithmException e) {
+        } catch (InvalidKeyException | java.security.NoSuchAlgorithmException e) {
             throw new AssertionError(e);
         }
         int version = buf.readVarInt();
@@ -305,4 +342,5 @@ public class ClientConnection extends ChannelInboundHandlerAdapter {
             throw new IllegalStateException("Unsupported forwarding version " + version + ", wanted " + '\001');
         return true;
     }
+
 }

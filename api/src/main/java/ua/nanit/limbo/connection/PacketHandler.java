@@ -20,6 +20,8 @@ package ua.nanit.limbo.connection;
 import io.netty.buffer.Unpooled;
 import ua.nanit.limbo.LimboConstants;
 import ua.nanit.limbo.protocol.packets.PacketHandshake;
+import ua.nanit.limbo.protocol.packets.configuration.PacketFinishConfiguration;
+import ua.nanit.limbo.protocol.packets.login.PacketLoginAcknowledged;
 import ua.nanit.limbo.protocol.packets.login.PacketLoginPluginRequest;
 import ua.nanit.limbo.protocol.packets.login.PacketLoginPluginResponse;
 import ua.nanit.limbo.protocol.packets.login.PacketLoginStart;
@@ -27,7 +29,7 @@ import ua.nanit.limbo.protocol.packets.status.PacketStatusPing;
 import ua.nanit.limbo.protocol.packets.status.PacketStatusRequest;
 import ua.nanit.limbo.protocol.packets.status.PacketStatusResponse;
 import ua.nanit.limbo.server.LimboServer;
-import ua.nanit.limbo.server.Logger;
+import ua.nanit.limbo.server.Log;
 import ua.nanit.limbo.util.UuidUtil;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -44,7 +46,7 @@ public class PacketHandler {
         conn.updateVersion(packet.getVersion());
         conn.updateState(packet.getNextState());
 
-        Logger.debug("Pinged from %s [%s]", conn.getAddress(),
+        Log.debug("Pinged from %s [%s]", conn.getAddress(),
                 conn.getClientVersion().toString());
 
         if (server.getConfig().getInfoForwarding().isLegacy()) {
@@ -125,6 +127,14 @@ public class PacketHandler {
 
             conn.fireLoginSuccess();
         }
+    }
+
+    public void handle(ClientConnection conn, PacketLoginAcknowledged packet) {
+        conn.onLoginAcknowledgedReceived();
+    }
+
+    public void handle(ClientConnection conn, PacketFinishConfiguration packet) {
+        conn.spawnPlayer();
     }
 
 }

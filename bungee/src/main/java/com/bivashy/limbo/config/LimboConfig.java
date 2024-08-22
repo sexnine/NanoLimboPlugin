@@ -14,7 +14,7 @@ import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 import com.bivashy.limbo.config.model.BungeeLimboServer;
 
 import net.md_5.bungee.api.plugin.Plugin;
-import ua.nanit.limbo.server.Logger;
+import ua.nanit.limbo.server.Log;
 
 public class LimboConfig {
     private List<BungeeLimboServer> servers;
@@ -36,14 +36,13 @@ public class LimboConfig {
                 try {
                     return node.get(BungeeLimboServer.class);
                 } catch(SerializationException e) {
-                    e.printStackTrace();
+                    Log.error("Cannot load limbos from configuration", e);
                     return null;
                 }
             }).collect(Collectors.toList());
             messages = new MessageConfiguration(root.node("messages"));
         } catch(ConfigurateException e) {
-            e.printStackTrace();
-            Logger.warning("Cannot load config.yml");
+            Log.warning("Cannot load config.yml", e);
         }
     }
 
@@ -54,4 +53,5 @@ public class LimboConfig {
     public List<BungeeLimboServer> getServers() {
         return Collections.unmodifiableList(servers);
     }
+
 }

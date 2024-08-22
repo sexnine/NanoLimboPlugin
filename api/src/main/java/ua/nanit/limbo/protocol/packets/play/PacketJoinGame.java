@@ -38,6 +38,8 @@ public class PacketJoinGame implements PacketOut {
     private boolean enableRespawnScreen;
     private boolean isDebug;
     private boolean isFlat;
+    private boolean limitedCrafting;
+    private boolean secureProfile;
 
     public void setEntityId(int entityId) {
         this.entityId = entityId;
@@ -93,6 +95,14 @@ public class PacketJoinGame implements PacketOut {
 
     public void setFlat(boolean flat) {
         isFlat = flat;
+    }
+
+    public void setLimitedCrafting(boolean limitedCrafting) {
+        this.limitedCrafting = limitedCrafting;
+    }
+
+    public void setSecureProfile(boolean secureProfile) {
+        this.secureProfile = secureProfile;
     }
 
     @Override
@@ -230,7 +240,7 @@ public class PacketJoinGame implements PacketOut {
             msg.writeBoolean(false);
         }
 
-        if (version.moreOrEqual(Version.V1_20)) {
+        if (version.equals(Version.V1_20)) {
             msg.writeBoolean(isHardcore);
             msg.writeByte(gameMode);
             msg.writeByte(previousGameMode);
@@ -248,6 +258,47 @@ public class PacketJoinGame implements PacketOut {
             msg.writeBoolean(isFlat);
             msg.writeBoolean(false);
             msg.writeVarInt(0);
+        }
+
+        if (version.fromTo(Version.V1_20_2, Version.V1_20_3)) {
+            msg.writeBoolean(isHardcore);
+            msg.writeStringsArray(worldNames);
+            msg.writeVarInt(maxPlayers);
+            msg.writeVarInt(viewDistance);
+            msg.writeVarInt(viewDistance); // Simulation Distance
+            msg.writeBoolean(reducedDebugInfo);
+            msg.writeBoolean(enableRespawnScreen);
+            msg.writeBoolean(limitedCrafting);
+            msg.writeString(worldName);
+            msg.writeString(worldName);
+            msg.writeLong(hashedSeed);
+            msg.writeByte(gameMode);
+            msg.writeByte(previousGameMode);
+            msg.writeBoolean(isDebug);
+            msg.writeBoolean(isFlat);
+            msg.writeBoolean(false);
+            msg.writeVarInt(0);
+        }
+
+        if (version.moreOrEqual(Version.V1_20_5)) {
+            msg.writeBoolean(isHardcore);
+            msg.writeStringsArray(worldNames);
+            msg.writeVarInt(maxPlayers);
+            msg.writeVarInt(viewDistance);
+            msg.writeVarInt(viewDistance); // Simulation Distance
+            msg.writeBoolean(reducedDebugInfo);
+            msg.writeBoolean(enableRespawnScreen);
+            msg.writeBoolean(limitedCrafting);
+            msg.writeVarInt(dimensionRegistry.getDimension_1_20_5().getId());
+            msg.writeString(worldName);
+            msg.writeLong(hashedSeed);
+            msg.writeByte(gameMode);
+            msg.writeByte(previousGameMode);
+            msg.writeBoolean(isDebug);
+            msg.writeBoolean(isFlat);
+            msg.writeBoolean(false);
+            msg.writeVarInt(0);
+            msg.writeBoolean(secureProfile);
         }
     }
 

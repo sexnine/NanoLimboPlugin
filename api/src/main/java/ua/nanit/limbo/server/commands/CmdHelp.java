@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import ua.nanit.limbo.server.Command;
 import ua.nanit.limbo.server.LimboServer;
-import ua.nanit.limbo.server.Logger;
+import ua.nanit.limbo.server.Log;
 
 public class CmdHelp implements Command {
 
@@ -18,10 +18,10 @@ public class CmdHelp implements Command {
     public void execute() {
         Collection<Command> commands = server.getCommandManager().getCommands();
 
-        Logger.info("Available commands:");
+        Log.info("Available commands:");
 
         for (Command command : commands) {
-            Logger.info("%s - %s", command.name(), command.description());
+            Log.info("%s - %s", command.name(), command.description());
         }
     }
 

@@ -17,12 +17,18 @@
 
 package ua.nanit.limbo.connection;
 
+import net.kyori.adventure.nbt.BinaryTag;
+import net.kyori.adventure.nbt.CompoundBinaryTag;
+import net.kyori.adventure.nbt.ListBinaryTag;
 import ua.nanit.limbo.LimboConstants;
 import ua.nanit.limbo.protocol.PacketSnapshot;
+import ua.nanit.limbo.protocol.packets.configuration.PacketFinishConfiguration;
+import ua.nanit.limbo.protocol.packets.configuration.PacketRegistryData;
 import ua.nanit.limbo.protocol.packets.login.PacketLoginSuccess;
 import ua.nanit.limbo.protocol.packets.play.*;
 import ua.nanit.limbo.server.LimboServer;
 import ua.nanit.limbo.server.data.Title;
+import ua.nanit.limbo.util.NbtMessageUtil;
 import ua.nanit.limbo.util.UuidUtil;
 import ua.nanit.limbo.protocol.packets.play.PacketBossBar;
 import ua.nanit.limbo.protocol.packets.play.PacketChatMessage;
@@ -37,8 +43,11 @@ import ua.nanit.limbo.protocol.packets.play.PacketTitleLegacy;
 import ua.nanit.limbo.protocol.packets.play.PacketTitleSetSubTitle;
 import ua.nanit.limbo.protocol.packets.play.PacketTitleSetTitle;
 import ua.nanit.limbo.protocol.packets.play.PacketTitleTimes;
+import ua.nanit.limbo.world.Dimension;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -56,7 +65,7 @@ public final class PacketSnapshots {
     private PacketSnapshot packetHeaderAndFooter;
 
     private PacketSnapshot packetPlayerPosAndLookLegacy;
-    // For 1.19 we need to spawn player outside world to avoid stuck in terrain loading
+    // For 1.19 we need to spawn player outside the world to avoid stuck in terrain loading
     private PacketSnapshot packetPlayerPosAndLook;
 
     private PacketSnapshot packetTitleTitle;
@@ -67,6 +76,12 @@ public final class PacketSnapshots {
     private PacketSnapshot packetTitleLegacySubtitle;
     private PacketSnapshot packetTitleLegacyTimes;
 
+    private PacketSnapshot packetRegistryData;
+    private List<PacketSnapshot> packetsRegistryData;
+    private PacketSnapshot packetFinishConfiguration;
+
+    private List<PacketSnapshot> packetsEmptyChunks;
+    private PacketSnapshot packetStartWaitingChunks;
 
     public PacketSnapshots(LimboServer server) {
         final String username = server.getConfig().getPingData().getVersion();
@@ -128,8 +143,8 @@ public final class PacketSnapshots {
 
         if (server.getConfig().isUseHeaderAndFooter()) {
             PacketPlayerListHeader header = new PacketPlayerListHeader();
-            header.setHeader(server.getConfig().getPlayerListHeader());
-            header.setFooter(server.getConfig().getPlayerListFooter());
+            header.setHeader(NbtMessageUtil.create(server.getConfig().getPlayerListHeader()));
+            header.setFooter(NbtMessageUtil.create(server.getConfig().getPlayerListFooter()));
             packetHeaderAndFooter = PacketSnapshot.of(header);
         }
 
@@ -142,7 +157,7 @@ public final class PacketSnapshots {
 
         if (server.getConfig().isUseJoinMessage()) {
             PacketChatMessage joinMessage = new PacketChatMessage();
-            joinMessage.setJsonData(server.getConfig().getJoinMessage());
+            joinMessage.setMessage(NbtMessageUtil.create(server.getConfig().getJoinMessage()));
             joinMessage.setPosition(PacketChatMessage.PositionLegacy.SYSTEM_MESSAGE);
             joinMessage.setSender(UUID.randomUUID());
             packetJoinMessage = PacketSnapshot.of(joinMessage);
@@ -189,6 +204,66 @@ public final class PacketSnapshots {
             packetTitleLegacySubtitle = PacketSnapshot.of(legacySubtitle);
             packetTitleLegacyTimes = PacketSnapshot.of(legacyTimes);
         }
+
+        PacketRegistryData registryData = new PacketRegistryData();
+        registryData.setDimensionRegistry(server.getDimensionRegistry());
+
+        packetRegistryData = PacketSnapshot.of(registryData);
+
+        Dimension dimension1_21 = server.getDimensionRegistry().getDimension_1_21();
+        List<PacketSnapshot> packetRegistries = new ArrayList<>();
+        CompoundBinaryTag dimensionTag = dimension1_21.getData();
+        for (String registryType : dimensionTag.keySet()) {
+            CompoundBinaryTag compoundRegistryType = dimensionTag.getCompound(registryType);
+
+            registryData = new PacketRegistryData();
+            registryData.setDimensionRegistry(server.getDimensionRegistry());
+
+            ListBinaryTag values = compoundRegistryType.getList("value");
+            registryData.setMetadataWriter((message, version) -> {
+                message.writeString(registryType);
+
+                message.writeVarInt(values.size());
+                for (BinaryTag entry : values) {
+                    CompoundBinaryTag entryTag = (CompoundBinaryTag) entry;
+
+                    String name = entryTag.getString("name");
+                    CompoundBinaryTag element = entryTag.getCompound("element");
+
+                    message.writeString(name);
+                    message.writeBoolean(true);
+                    message.writeNamelessCompoundTag(element);
+                }
+            });
+
+            packetRegistries.add(PacketSnapshot.of(registryData));
+        }
+
+        packetsRegistryData = packetRegistries;
+
+        packetFinishConfiguration = PacketSnapshot.of(new PacketFinishConfiguration());
+
+        PacketGameEvent packetGameEvent = new PacketGameEvent();
+        packetGameEvent.setType((byte) 13); // Waiting for chunks type
+        packetGameEvent.setValue(0);
+        packetStartWaitingChunks = PacketSnapshot.of(packetGameEvent);
+
+        int chunkXOffset = (int) 0 >> 4; // Default x position is 0
+        int chunkZOffset = (int) 0 >> 4; // Default z position is 0
+        int chunkEdgeSize = 1; // TODO Make configurable?
+
+        List<PacketSnapshot> emptyChunks = new ArrayList<>();
+        // Make multiple chunks for edges
+        for (int chunkX = chunkXOffset - chunkEdgeSize; chunkX <= chunkXOffset + chunkEdgeSize; ++chunkX) {
+            for (int chunkZ = chunkZOffset - chunkEdgeSize; chunkZ <= chunkZOffset + chunkEdgeSize; ++chunkZ) {
+                PacketEmptyChunk packetEmptyChunk = new PacketEmptyChunk();
+                packetEmptyChunk.setX(chunkX);
+                packetEmptyChunk.setZ(chunkZ);
+
+                emptyChunks.add(PacketSnapshot.of(packetEmptyChunk));
+            }
+        }
+        packetsEmptyChunks = emptyChunks;
     }
 
     public PacketSnapshot getPacketLoginSuccess() {
@@ -262,4 +337,25 @@ public final class PacketSnapshots {
     public PacketSnapshot getPacketTitleLegacyTimes() {
         return packetTitleLegacyTimes;
     }
+
+    public PacketSnapshot getPacketRegistryData() {
+        return packetRegistryData;
+    }
+
+    public PacketSnapshot getPacketFinishConfiguration() {
+        return packetFinishConfiguration;
+    }
+
+    public List<PacketSnapshot> getPacketsEmptyChunks() {
+        return Collections.unmodifiableList(packetsEmptyChunks);
+    }
+
+    public PacketSnapshot getPacketStartWaitingChunks() {
+        return packetStartWaitingChunks;
+    }
+
+    public List<PacketSnapshot> getPacketsRegistryData() {
+        return Collections.unmodifiableList(packetsRegistryData);
+    }
+
 }

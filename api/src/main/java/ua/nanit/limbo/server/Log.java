@@ -20,12 +20,12 @@ package ua.nanit.limbo.server;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-public final class Logger {
+public final class Log {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("hh:mm:ss");
     private static int debugLevel = Level.INFO.getIndex();
 
-    private Logger() {}
+    private Log() {}
 
     public static int getLevel() {
         return debugLevel;
@@ -57,9 +57,14 @@ public final class Logger {
 
     public static void print(Level level, Object msg, Throwable t, Object... args) {
         if (debugLevel >= level.getIndex()) {
-            System.out.printf("%s: %s%n", getPrefix(level), String.format(msg.toString(), args));
+            String output = String.format("%s: %s", getPrefix(level), String.format(msg.toString(), args));
+            System.out.print(output);
             if (t != null) t.printStackTrace();
         }
+    }
+
+    public static boolean isDebug() {
+        return debugLevel >= Level.DEBUG.getIndex();
     }
 
     private static String getPrefix(Level level) {

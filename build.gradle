@@ -3,8 +3,8 @@ plugins {
 }
 
 allprojects {
-    group 'ru.nanit'
-    version '1.5.2'
+    group 'ua.nanit'
+    version '1.8.1'
 }
 
 subprojects {
@@ -15,7 +15,7 @@ subprojects {
         options.encoding = "UTF-8"
     }
 
-    tasks.withType(JavaCompile) {
+    tasks.withType(JavaCompile).configureEach {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
@@ -25,8 +25,14 @@ subprojects {
     }
 
     dependencies {
-        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.1'
-        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.1'
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.3'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.3'
+
+        implementation 'org.spongepowered:configurate-yaml:4.1.2'
+        implementation 'io.netty:netty-all:4.1.101.Final'
+        implementation 'net.kyori:adventure-nbt:4.14.0'
+        implementation 'com.grack:nanojson:1.8'
+        implementation 'com.google.code.gson:gson:2.10.1'
     }
 
     shadowJar {

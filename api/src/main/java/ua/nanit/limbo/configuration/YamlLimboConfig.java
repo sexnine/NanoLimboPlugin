@@ -73,6 +73,11 @@ public final class YamlLimboConfig implements LimboConfig {
     private int bossGroupSize;
     private int workerGroupSize;
 
+    private boolean useTrafficLimits;
+    private int maxPacketSize;
+    private double interval;
+    private double maxPacketRate;
+
     public YamlLimboConfig(Path root,ClassLoader classLoader) {
         this.root = root;
         this.classLoader = classLoader;
@@ -130,6 +135,11 @@ public final class YamlLimboConfig implements LimboConfig {
         useEpoll = conf.node("netty", "useEpoll").getBoolean(true);
         bossGroupSize = conf.node("netty", "threads", "bossGroup").getInt(1);
         workerGroupSize = conf.node("netty", "threads", "workerGroup").getInt(4);
+
+        useTrafficLimits = conf.node("traffic", "enable").getBoolean(false);
+        maxPacketSize = conf.node("traffic", "maxPacketSize").getInt(-1);
+        interval = conf.node("traffic", "interval").getDouble(-1.0);
+        maxPacketRate = conf.node("traffic", "maxPacketRate").getDouble(-1.0);
         return this;
     }
 
@@ -278,4 +288,25 @@ public final class YamlLimboConfig implements LimboConfig {
     public int getWorkerGroupSize() {
         return workerGroupSize;
     }
+
+    @Override
+    public boolean isUseTrafficLimits() {
+        return useTrafficLimits;
+    }
+
+    @Override
+    public int getMaxPacketSize() {
+        return maxPacketSize;
+    }
+
+    @Override
+    public double getInterval() {
+        return interval;
+    }
+
+    @Override
+    public double getMaxPacketRate() {
+        return maxPacketRate;
+    }
+
 }
