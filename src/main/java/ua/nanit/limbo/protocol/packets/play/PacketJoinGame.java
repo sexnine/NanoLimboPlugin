@@ -310,7 +310,7 @@ public class PacketJoinGame implements PacketOut {
             msg.writeBoolean(reducedDebugInfo);
             msg.writeBoolean(enableRespawnScreen);
             msg.writeBoolean(limitedCrafting);
-            msg.writeVarInt(dimensionRegistry.getDimension_1_21().getId());
+            msg.writeVarInt(dimensionRegistry.getDimension_1_21_2().getId());
             msg.writeString(worldName);
             msg.writeLong(hashedSeed);
             msg.writeByte(gameMode);
