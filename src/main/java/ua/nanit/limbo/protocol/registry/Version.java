@@ -75,7 +75,8 @@ public enum Version {
     V1_20_3(765, List.of("1.20.3")),
     V1_20_5(766, List.of("1.20.5", "1.20.6")),
     // 1.20.6 has same protocol number
-    V1_21(767, List.of("1.21")),
+    V1_21(767, List.of("1.21", "1.21.1")),
+    // 1.21.1 has same protocol number
     V1_21_2(768, List.of("1.21.2", "1.21.3")),
     // 1.21.3 has same protocol number
     V1_21_4(769, List.of("1.21.4"));
