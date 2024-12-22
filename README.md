@@ -1,3 +1,115 @@
+## For developers
+If you want to create Limbo using api you can follow this steps:
+### Get started
+**Maven**:
+```xml
+<repositories>
+   <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+   </repository>
+</repositories>
+<dependencies>
+    <dependency>
+       <groupId>com.github.bivashy.NanoLimboPlugin</groupId>
+       <artifactId>api</artifactId>
+       <version>1.0.11</version>
+    </dependency>
+</dependencies>
+```
+**Gradle**:
+```
+allprojects {
+   repositories {
+      maven { url 'https://jitpack.io' }
+   }
+}
+dependencies {
+    implementation 'com.github.bivashy.NanoLimboPlugin:api:1.0.11'
+}
+```
+### How to use API?
+That's easy!:
+```java
+LimboConfig config = new YamlLimboConfig(Paths.get("./"), classLoader).load();
+CommandHandler<Command> commandHandler = new ConsoleCommandHandler();
+LimboServer server = new LimboServer(config, commandHandler, getClass().getClassLoader());
+server.start();
+
+// When you are done
+server.stop();
+```
+Here we are passing 3 arguments:
+1. LimboConfig - Configures limbo server, defines `SocketAddress`, join message, title, dimension type, and etc.
+2. CommandHandler - Simple CommandHandler. It used by limbo for registering commands. Useful for console only, redundant for Bukkit, Bungee, and other platforms.
+3. ClassLoader - used only for loading dummy dimension files from the "resources" directory. It loads all dimensions from the "dimension" folder, which can be found at [this link](https://github.com/bivashy/NanoLimboPlugin/tree/main/api/src/main/resources/dimension).
+---
+
+If you don't want to create or load config file, just implement `LimboConfig` interface, just like that:
+
+```java
+import java.net.SocketAddress;
+
+public class CustomLimboConfig implements LimboConfig {
+   /**
+    * Disables debug entirely
+    */
+   @Override
+   public int getDebugLevel() {
+      return -1;
+   }
+
+   /**
+    * Set F3 brand text to the "Some brand text"
+    */
+   @Override
+   public String getBrandName() {
+      return "Some brand text";
+   }
+
+   /**
+    * Launches limbo on the localhost:25555
+    */
+   @Override
+   public SocketAddress getAddress(){
+       return new InetSocketAddress("localhost", 25555);
+   }
+
+   // Implement all methods
+}
+```
+Then just pass to the LimboServer:
+```java
+LimboConfig config = new CustomLimboConfig();
+LimboServer server = new LimboServer(config, commandHandler, getClass().getClassLoader()); 
+```
+
+---
+
+If you don't want limbo commands:
+
+```java
+import java.util.Collections;
+
+public class CustomCommandHandler implements CommandHandler<Command> {
+   @Override
+   public Collection<Command> getCommands() {
+      return Collections.emptyList();
+   }
+
+   public void register(T command) {
+   }
+
+   public boolean executeCommand(String input) {
+   }
+}
+```
+
+Then just pass to the LimboServer:
+```java
+CommandHandler<Command> commandHandler = new CustomCommandHandler();
+LimboServer server = new LimboServer(config, commandHandler, getClass().getClassLoader()); 
+```
 ## NanoLimbo
 
 This is a lightweight Minecraft limbo server, written in Java with Netty.
@@ -38,7 +150,7 @@ Symbol `X` means all minor versions.
 - [x] 1.20.X
 - [x] 1.21
 
-The server **doesn't** support snapshots.
+The server **doesn't** support snapshot versions.
 
 ### Commands
 
