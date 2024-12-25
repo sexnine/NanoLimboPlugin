@@ -45,7 +45,6 @@ import ua.nanit.limbo.protocol.packets.play.PacketTitleLegacy;
 import ua.nanit.limbo.protocol.packets.play.PacketTitleSetSubTitle;
 import ua.nanit.limbo.protocol.packets.play.PacketTitleSetTitle;
 import ua.nanit.limbo.protocol.packets.play.PacketTitleTimes;
-import ua.nanit.limbo.world.Dimension;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -75,16 +74,16 @@ public final class PacketSnapshots {
     private PacketSnapshot packetTitleLegacySubtitle;
     private PacketSnapshot packetTitleLegacyTimes;
 
-    public static PacketSnapshot PACKET_REGISTRY_DATA;
+    private PacketSnapshot packetRegistryData;
 
-    public static PacketSnapshot PACKET_KNOWN_PACKS;
-    public static PacketSnapshot PACKET_UPDATE_TAGS;
-    public static List<PacketSnapshot> PACKETS_REGISTRY_DATA_1_20_5;
-    public static List<PacketSnapshot> PACKETS_REGISTRY_DATA_1_21;
-    public static List<PacketSnapshot> PACKETS_REGISTRY_DATA_1_21_2;
-    public static List<PacketSnapshot> PACKETS_REGISTRY_DATA_1_21_4;
+    private PacketSnapshot packetKnownPacks;
+    private PacketSnapshot packetUpdateTags;
+    private List<PacketSnapshot> packetsRegistryData1_20_5;
+    private List<PacketSnapshot> packetsRegistryData1_21;
+    private List<PacketSnapshot> packetsRegistryData1_21_2;
+    private List<PacketSnapshot> packetsRegistryData1_21_4;
 
-    public static PacketSnapshot PACKET_FINISH_CONFIGURATION;
+    private PacketSnapshot packetFinishConfiguration;
 
     private List<PacketSnapshot> packetsEmptyChunks;
     private PacketSnapshot packetStartWaitingChunks;
@@ -212,22 +211,22 @@ public final class PacketSnapshots {
         }
 
         PacketKnownPacks packetKnownPacks = new PacketKnownPacks();
-        PACKET_KNOWN_PACKS = PacketSnapshot.of(packetKnownPacks);
+        this.packetKnownPacks = PacketSnapshot.of(packetKnownPacks);
 
         PacketUpdateTags packetUpdateTags = new PacketUpdateTags();
         packetUpdateTags.setTags(server.getDimensionRegistry().getTags_1_20_5());
 
-        PACKET_UPDATE_TAGS = PacketSnapshot.of(packetUpdateTags);
+        this.packetUpdateTags = PacketSnapshot.of(packetUpdateTags);
 
         PacketRegistryData registryData = new PacketRegistryData();
         registryData.setDimensionRegistry(server.getDimensionRegistry());
 
         packetRegistryData = PacketSnapshot.of(registryData);
 
-        PACKETS_REGISTRY_DATA_1_20_5 = createRegistryData(server, server.getDimensionRegistry().getCodec_1_20_5());
-        PACKETS_REGISTRY_DATA_1_21 = createRegistryData(server, server.getDimensionRegistry().getCodec_1_21());
-        PACKETS_REGISTRY_DATA_1_21_2 = createRegistryData(server, server.getDimensionRegistry().getCodec_1_21_2());
-        PACKETS_REGISTRY_DATA_1_21_4 = createRegistryData(server, server.getDimensionRegistry().getCodec_1_21_4());
+        packetsRegistryData1_20_5 = createRegistryData(server, server.getDimensionRegistry().getCodec_1_20_5());
+        packetsRegistryData1_21 = createRegistryData(server, server.getDimensionRegistry().getCodec_1_21());
+        packetsRegistryData1_21_2 = createRegistryData(server, server.getDimensionRegistry().getCodec_1_21_2());
+        packetsRegistryData1_21_4 = createRegistryData(server, server.getDimensionRegistry().getCodec_1_21_4());
 
         packetFinishConfiguration = PacketSnapshot.of(new PacketFinishConfiguration());
 
@@ -377,8 +376,28 @@ public final class PacketSnapshots {
         return packetStartWaitingChunks;
     }
 
-    public List<PacketSnapshot> getPacketsRegistryData() {
-        return Collections.unmodifiableList(packetsRegistryData);
+    public PacketSnapshot getPacketKnownPacks() {
+        return packetKnownPacks;
+    }
+
+    public PacketSnapshot getPacketUpdateTags() {
+        return packetUpdateTags;
+    }
+
+    public List<PacketSnapshot> getPacketsRegistryData1_20_5() {
+        return packetsRegistryData1_20_5;
+    }
+
+    public List<PacketSnapshot> getPacketsRegistryData1_21() {
+        return packetsRegistryData1_21;
+    }
+
+    public List<PacketSnapshot> getPacketsRegistryData1_21_2() {
+        return packetsRegistryData1_21_2;
+    }
+
+    public List<PacketSnapshot> getPacketsRegistryData1_21_4() {
+        return packetsRegistryData1_21_4;
     }
 
 }
