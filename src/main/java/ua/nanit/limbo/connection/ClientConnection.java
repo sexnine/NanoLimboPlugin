@@ -202,7 +202,9 @@ public class ClientConnection extends ChannelInboundHandlerAdapter {
         if (clientVersion.moreOrEqual(Version.V1_20_5)) {
             writePacket(PacketSnapshots.PACKET_KNOWN_PACKS);
 
-            if (clientVersion.moreOrEqual(Version.V1_21_4)) {
+            if (clientVersion.moreOrEqual(Version.V1_21_5)) {
+                writePackets(PacketSnapshots.PACKETS_REGISTRY_DATA_1_21_5);
+            } else if (clientVersion.moreOrEqual(Version.V1_21_4)) {
                 writePackets(PacketSnapshots.PACKETS_REGISTRY_DATA_1_21_4);
             } else if (clientVersion.moreOrEqual(Version.V1_21_2)) {
                 writePackets(PacketSnapshots.PACKETS_REGISTRY_DATA_1_21_2);
@@ -212,7 +214,11 @@ public class ClientConnection extends ChannelInboundHandlerAdapter {
                 writePackets(PacketSnapshots.PACKETS_REGISTRY_DATA_1_20_5);
             }
 
-            writePacket(PacketSnapshots.PACKET_UPDATE_TAGS);
+            if (clientVersion.moreOrEqual(Version.V1_21_5)) {
+                writePacket(PacketSnapshots.PACKET_UPDATE_TAGS_1_21_5);
+            } else {
+                writePacket(PacketSnapshots.PACKET_UPDATE_TAGS_1_20_5);
+            }
         } else {
             writePacket(PacketSnapshots.PACKET_REGISTRY_DATA);
         }

@@ -48,9 +48,11 @@ public final class DimensionRegistry {
     private CompoundBinaryTag codec_1_21;
     private CompoundBinaryTag codec_1_21_2;
     private CompoundBinaryTag codec_1_21_4;
+    private CompoundBinaryTag codec_1_21_5;
     private CompoundBinaryTag oldCodec;
 
     private CompoundBinaryTag tags_1_20_5;
+    private CompoundBinaryTag tags_1_21_5;
 
     public DimensionRegistry(LimboServer server) {
         this.server = server;
@@ -96,6 +98,10 @@ public final class DimensionRegistry {
         return codec_1_21_4;
     }
 
+    public CompoundBinaryTag getCodec_1_21_5() {
+        return codec_1_21_5;
+    }
+
     public CompoundBinaryTag getOldCodec() {
         return oldCodec;
     }
@@ -128,6 +134,10 @@ public final class DimensionRegistry {
         return tags_1_20_5;
     }
 
+    public CompoundBinaryTag getTags_1_21_5() {
+        return tags_1_21_5;
+    }
+
     public void load(String def) throws IOException {
         // On 1.16-1.16.1 different codec format
         oldCodec = readSnbtFile("/dimension/codec_old.snbt");
@@ -141,8 +151,10 @@ public final class DimensionRegistry {
         codec_1_21 = readSnbtFile("/dimension/codec_1_21.snbt");
         codec_1_21_2 = readSnbtFile("/dimension/codec_1_21_2.snbt");
         codec_1_21_4 = readSnbtFile("/dimension/codec_1_21_4.snbt");
+        codec_1_21_5 = readSnbtFile("/dimension/codec_1_21_5.snbt");
 
         tags_1_20_5 = readSnbtFile("/dimension/tags_1_20_5.snbt");
+        tags_1_21_5 = readSnbtFile("/dimension/tags_1_21_5.snbt");
 
         defaultDimension_1_16 = getDefaultDimension(def, codec_1_16);
         defaultDimension_1_18_2 = getDefaultDimension(def, codec_1_18_2);

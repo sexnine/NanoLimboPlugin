@@ -64,11 +64,15 @@ public final class PacketSnapshots {
     public static PacketSnapshot PACKET_REGISTRY_DATA;
 
     public static PacketSnapshot PACKET_KNOWN_PACKS;
-    public static PacketSnapshot PACKET_UPDATE_TAGS;
+
+    public static PacketSnapshot PACKET_UPDATE_TAGS_1_20_5;
+    public static PacketSnapshot PACKET_UPDATE_TAGS_1_21_5;
+
     public static List<PacketSnapshot> PACKETS_REGISTRY_DATA_1_20_5;
     public static List<PacketSnapshot> PACKETS_REGISTRY_DATA_1_21;
     public static List<PacketSnapshot> PACKETS_REGISTRY_DATA_1_21_2;
     public static List<PacketSnapshot> PACKETS_REGISTRY_DATA_1_21_4;
+    public static List<PacketSnapshot> PACKETS_REGISTRY_DATA_1_21_5;
 
     public static PacketSnapshot PACKET_FINISH_CONFIGURATION;
 
@@ -203,10 +207,8 @@ public final class PacketSnapshots {
         PacketKnownPacks packetKnownPacks = new PacketKnownPacks();
         PACKET_KNOWN_PACKS = PacketSnapshot.of(packetKnownPacks);
 
-        PacketUpdateTags packetUpdateTags = new PacketUpdateTags();
-        packetUpdateTags.setTags(server.getDimensionRegistry().getTags_1_20_5());
-
-        PACKET_UPDATE_TAGS = PacketSnapshot.of(packetUpdateTags);
+        PACKET_UPDATE_TAGS_1_20_5 = createTagData(server.getDimensionRegistry().getTags_1_20_5());
+        PACKET_UPDATE_TAGS_1_21_5 = createTagData(server.getDimensionRegistry().getTags_1_21_5());
 
         PacketRegistryData packetRegistryData = new PacketRegistryData();
         packetRegistryData.setDimensionRegistry(server.getDimensionRegistry());
@@ -217,6 +219,7 @@ public final class PacketSnapshots {
         PACKETS_REGISTRY_DATA_1_21 = createRegistryData(server, server.getDimensionRegistry().getCodec_1_21());
         PACKETS_REGISTRY_DATA_1_21_2 = createRegistryData(server, server.getDimensionRegistry().getCodec_1_21_2());
         PACKETS_REGISTRY_DATA_1_21_4 = createRegistryData(server, server.getDimensionRegistry().getCodec_1_21_4());
+        PACKETS_REGISTRY_DATA_1_21_5 = createRegistryData(server, server.getDimensionRegistry().getCodec_1_21_5());
 
         PACKET_FINISH_CONFIGURATION = PacketSnapshot.of(new PacketFinishConfiguration());
 
@@ -241,6 +244,13 @@ public final class PacketSnapshots {
             }
         }
         PACKETS_EMPTY_CHUNKS = emptyChunks;
+    }
+
+    private static PacketSnapshot createTagData(CompoundBinaryTag tags) {
+        PacketUpdateTags packetUpdateTags = new PacketUpdateTags();
+        packetUpdateTags.setTags(tags);
+
+        return PacketSnapshot.of(packetUpdateTags);
     }
 
     private static List<PacketSnapshot> createRegistryData(LimboServer server, CompoundBinaryTag dimensionTag) {
