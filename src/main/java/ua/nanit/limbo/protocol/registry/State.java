@@ -166,7 +166,7 @@ public enum State {
                     map(0x0E, V1_19_3, V1_19_3),
                     map(0x10, V1_19_4, V1_20),
                     map(0x11, V1_20_2, V1_21_4),
-                    map(0x10, V1_20_5, V1_21_5)
+                    map(0x10, V1_21_5, V1_21_5)
             );
             clientBound.register(PacketJoinGame::new,
                     map(0x01, V1_7_2, V1_8),
