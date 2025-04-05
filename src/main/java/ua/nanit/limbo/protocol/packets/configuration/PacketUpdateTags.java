@@ -38,4 +38,9 @@ public class PacketUpdateTags implements PacketOut {
             }
         }
     }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName();
+    }
 }

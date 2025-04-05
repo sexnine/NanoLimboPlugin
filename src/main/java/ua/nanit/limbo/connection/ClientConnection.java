@@ -105,7 +105,9 @@ public class ClientConnection extends ChannelInboundHandlerAdapter {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         if (channel.isActive()) {
-            Log.error("Unhandled exception: ", cause);
+            Log.error("Encountered exception", cause);
+
+            ctx.close();
         }
     }
 

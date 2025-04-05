@@ -29,4 +29,9 @@ public class PacketRegistryData implements PacketOut {
         }
         msg.writeNamelessCompoundTag(dimensionRegistry.getCodec_1_20());
     }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName();
+    }
 }

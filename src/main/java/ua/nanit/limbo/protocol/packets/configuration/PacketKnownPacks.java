@@ -1,5 +1,6 @@
 package ua.nanit.limbo.protocol.packets.configuration;
 
+import io.netty.handler.codec.DecoderException;
 import ua.nanit.limbo.connection.ClientConnection;
 import ua.nanit.limbo.protocol.ByteMessage;
 import ua.nanit.limbo.protocol.PacketIn;
@@ -35,11 +36,14 @@ public class PacketKnownPacks implements PacketIn, PacketOut {
     @Override
     public void decode(ByteMessage msg, Version version) {
         int size = msg.readVarInt();
+        if (size > 16) {
+            throw new DecoderException("Cannot receive known packs larger than 16");
+        }
         List<KnownPack> knownPacks = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
-            String nameSpace = msg.readString();
-            String id = msg.readString();
-            String knownPackVersion = msg.readString();
+            String nameSpace = msg.readString(256);
+            String id = msg.readString(256);
+            String knownPackVersion = msg.readString(256);
 
             knownPacks.add(new KnownPack(nameSpace, id, knownPackVersion));
         }

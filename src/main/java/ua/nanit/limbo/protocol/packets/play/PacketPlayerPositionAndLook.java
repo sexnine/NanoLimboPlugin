@@ -52,6 +52,11 @@ public class PacketPlayerPositionAndLook implements PacketOut {
         encodeLegacy(msg, version);
     }
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName();
+    }
+
     private void encodeLegacy(ByteMessage msg, Version version) {
         msg.writeDouble(x);
         msg.writeDouble(y + (version.less(Version.V1_8) ? 1.62F : 0));

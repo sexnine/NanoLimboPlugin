@@ -335,4 +335,8 @@ public class PacketJoinGame implements PacketOut {
         }
     }
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName();
+    }
 }

@@ -55,4 +55,8 @@ public class PacketEmptyChunk implements PacketOut {
         msg.writeBytes(lightData, 1, lightData.length - 1);
     }
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName();
+    }
 }
