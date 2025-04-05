@@ -41,8 +41,8 @@ public class PacketEmptyChunk implements PacketOut {
             msg.writeNamelessCompoundTag(rootTag);
         }
 
-        int sections = (version.moreOrEqual(Version.V1_20_5) ? 24 : 16);
-        byte[] sectionData = (version.moreOrEqual(Version.V1_21_5) ? new byte[]{0, 0, 0, 0, 0, 0, 0, 0} : new byte[]{0, 0, 0, 0, 0, 0, 1, 0});
+        int sections = 24;
+        byte[] sectionData = new byte[]{0, 0, 0, 0, 0, 0, 0, 0};
         msg.writeVarInt(sectionData.length * sections);
         for (int i = 0; i < sections; i++) {
             msg.writeBytes(sectionData);

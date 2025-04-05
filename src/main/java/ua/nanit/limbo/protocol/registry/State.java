@@ -133,6 +133,10 @@ public enum State {
                     map(0x03, V1_20_2, V1_20_3),
                     map(0x04, V1_20_5, V1_21_5)
             );
+            serverBound.register(
+                    PacketKnownPacks::new,
+                    map(0x07, V1_20_5, V1_21_5)
+            );
         }
     },
     PLAY(4) {
