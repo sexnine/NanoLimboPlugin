@@ -109,7 +109,9 @@ public class ClientConnection extends ChannelInboundHandlerAdapter {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         if (channel.isActive()) {
-            Log.error("Unhandled exception: ", cause);
+            Log.error("Encountered exception", cause);
+
+            ctx.close();
         }
     }
 
@@ -199,26 +201,34 @@ public class ClientConnection extends ChannelInboundHandlerAdapter {
     public void onLoginAcknowledgedReceived() {
         updateState(State.CONFIGURATION);
 
-        if (server.getPacketSnapshots().getPacketPluginMessage() != null)
+        if (server.getPacketSnapshots().getPacketPluginMessage() != null) {
             writePacket(server.getPacketSnapshots().getPacketPluginMessage());
+        }
 
         if (clientVersion.moreOrEqual(Version.V1_20_5)) {
-            writePacket(server.getPacketSnapshots().getPacketKnownPacks());
-
-            if (clientVersion.moreOrEqual(Version.V1_21_4)) {
-                writePackets(server.getPacketSnapshots().getPacketsRegistryData1_21_4());
-            } else if (clientVersion.moreOrEqual(Version.V1_21_2)) {
-                writePackets(server.getPacketSnapshots().getPacketsRegistryData1_21_2());
-            } else if (clientVersion.moreOrEqual(Version.V1_21)) {
-                writePackets(server.getPacketSnapshots().getPacketsRegistryData1_21());
-            } else if (clientVersion.moreOrEqual(Version.V1_20_5)) {
-                writePackets(server.getPacketSnapshots().getPacketsRegistryData1_20_5());
-            }
-
-            writePacket(server.getPacketSnapshots().getPacketUpdateTags());
-        } else {
-            writePacket(server.getPacketSnapshots().getPacketRegistryData());
+            sendPacket(server.getPacketSnapshots().getPacketKnownPacks());
+            return;
         }
+
+        writePacket(server.getPacketSnapshots().getPacketRegistryData());
+
+        sendPacket(PacketSnapshots.PACKET_FINISH_CONFIGURATION);
+    }
+
+    public void onKnownPacksReceived() {
+        if (clientVersion.moreOrEqual(Version.V1_21_5)) {
+            writePackets(PacketSnapshots.PACKETS_REGISTRY_DATA_1_21_5);
+        } else if (clientVersion.moreOrEqual(Version.V1_21_4)) {
+            writePackets(server.getPacketSnapshots().getPacketsRegistryData1_21_4());
+        } else if (clientVersion.moreOrEqual(Version.V1_21_2)) {
+            writePackets(server.getPacketSnapshots().getPacketsRegistryData1_21_2());
+        } else if (clientVersion.moreOrEqual(Version.V1_21)) {
+            writePackets(server.getPacketSnapshots().getPacketsRegistryData1_21());
+        } else if (clientVersion.moreOrEqual(Version.V1_20_5)) {
+            writePackets(server.getPacketSnapshots().getPacketsRegistryData1_20_5());
+        }
+
+        writePacket(server.getPacketSnapshots().getPacketUpdateTags());
 
         sendPacket(server.getPacketSnapshots().getPacketFinishConfiguration());
     }

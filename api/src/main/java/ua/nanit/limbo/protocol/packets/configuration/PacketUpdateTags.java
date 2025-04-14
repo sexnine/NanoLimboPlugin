@@ -1,46 +1,46 @@
 package ua.nanit.limbo.protocol.packets.configuration;
 
-import net.kyori.adventure.nbt.CompoundBinaryTag;
-import net.kyori.adventure.nbt.IntBinaryTag;
-import net.kyori.adventure.nbt.ListBinaryTag;
 import ua.nanit.limbo.protocol.ByteMessage;
 import ua.nanit.limbo.protocol.PacketOut;
 import ua.nanit.limbo.protocol.registry.Version;
 
-import java.util.Set;
+import java.util.List;
+import java.util.Map;
 
 public class PacketUpdateTags implements PacketOut {
 
-    private CompoundBinaryTag tags;
+    private Map<String, Map<String, List<Integer>>> tags;
 
-    public CompoundBinaryTag getTags() {
+    public Map<String, Map<String, List<Integer>>> getTags() {
         return tags;
     }
 
-    public void setTags(CompoundBinaryTag tags) {
+    public void setTags(Map<String, Map<String, List<Integer>>> tags) {
         this.tags = tags;
     }
 
     @Override
     public void encode(ByteMessage msg, Version version) {
-        Set<String> names = this.tags.keySet();
-        msg.writeVarInt(names.size());
-        for (String name : names) {
-            msg.writeString(name);
+        msg.writeVarInt(this.tags.size());
+        for (Map.Entry<String, Map<String, List<Integer>>> entry : this.tags.entrySet()) {
+            msg.writeString(entry.getKey());
 
-            CompoundBinaryTag subTag = (CompoundBinaryTag) this.tags.get(name);
+            Map<String, List<Integer>> subTags = entry.getValue();
+            msg.writeVarInt(subTags.size());
+            for (Map.Entry<String, List<Integer>> subEntry : subTags.entrySet()) {
+                msg.writeString(subEntry.getKey());
 
-            Set<String> subNames = subTag.keySet();
-            msg.writeVarInt(subNames.size());
-            for (String subName : subNames) {
-                msg.writeString(subName);
-
-                ListBinaryTag ids = (ListBinaryTag) subTag.get(subName);
+                List<Integer> ids = subEntry.getValue();
                 msg.writeVarInt(ids.size());
-                for (Object objectId : ids) {
-                    msg.writeVarInt(((IntBinaryTag) objectId).value());
+                for (int id : ids) {
+                    msg.writeVarInt(id);
                 }
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName();
     }
 }

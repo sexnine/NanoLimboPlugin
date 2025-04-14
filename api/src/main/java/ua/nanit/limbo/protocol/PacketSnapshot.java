@@ -22,6 +22,7 @@ import ua.nanit.limbo.protocol.registry.Version;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * PacketSnapshot encodes a packet to byte array for each MC version.
@@ -29,26 +30,26 @@ import java.util.Map;
  */
 public class PacketSnapshot implements PacketOut {
 
-    private final PacketOut packet;
+    private final Class<? extends PacketOut> packetClazz;
     private final Map<Version, byte[]> versionMessages = new EnumMap<>(Version.class);
     private final Map<Version, Version> mappings = new EnumMap<>(Version.class);
 
-    public PacketSnapshot(PacketOut packet) {
-        this.packet = packet;
+    public PacketSnapshot(Class<? extends PacketOut> packetClazz) {
+        this.packetClazz = packetClazz;
     }
 
-    public PacketOut getWrappedPacket() {
-        return packet;
+    public Class<? extends PacketOut> getPacketClass() {
+        return packetClazz;
     }
 
-    public void encode() {
+    public void encode(Function<Version, PacketOut> packetComputeFunction) {
         Map<Integer, Version> hashes = new HashMap<>();
 
         for (Version version : Version.values()) {
             if (version.equals(Version.UNDEFINED)) continue;
 
             ByteMessage encodedMessage = ByteMessage.create();
-            packet.encode(encodedMessage, version);
+            packetComputeFunction.apply(version).encode(encodedMessage, version);
 
             int hash = encodedMessage.hashCode();
             Version hashed = hashes.get(hash);
@@ -78,12 +79,17 @@ public class PacketSnapshot implements PacketOut {
 
     @Override
     public String toString() {
-        return packet.getClass().getSimpleName();
+        return packetClazz.getSimpleName();
     }
 
     public static PacketSnapshot of(PacketOut packet) {
-        PacketSnapshot snapshot = new PacketSnapshot(packet);
-        snapshot.encode();
+        return of(packet.getClass(), version -> packet);
+    }
+
+    public static PacketSnapshot of(Class<? extends PacketOut> packetClazz,
+                                    Function<Version, PacketOut> packetComputeFunction) {
+        PacketSnapshot snapshot = new PacketSnapshot(packetClazz);
+        snapshot.encode(packetComputeFunction);
         return snapshot;
     }
 }

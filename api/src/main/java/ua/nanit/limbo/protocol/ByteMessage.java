@@ -22,6 +22,7 @@ import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
 import io.netty.util.ByteProcessor;
 import net.kyori.adventure.nbt.*;
+import ua.nanit.limbo.connection.PlayerPublicKey;
 import ua.nanit.limbo.protocol.registry.Version;
 
 import java.io.IOException;
@@ -110,13 +111,23 @@ public class ByteMessage extends ByteBuf {
     }
 
     public String readString() {
-        return readString(readVarInt());
+        return readString(Short.MAX_VALUE);
     }
 
-    public String readString(int length) {
-        String str = buf.toString(buf.readerIndex(), length, StandardCharsets.UTF_8);
-        buf.skipBytes(length);
-        return str;
+    public String readString(final int maxLen) {
+        final int len = readVarInt();
+        if (len > maxLen * 3) {
+            throw new DecoderException("Cannot receive string longer than " + maxLen * 3 + " (got " + len + " bytes)");
+        }
+
+        final String s = buf.toString(buf.readerIndex(), len, StandardCharsets.UTF_8);
+        buf.readerIndex(buf.readerIndex() + len);
+
+        if (s.length() > maxLen) {
+            throw new DecoderException("Cannot receive string longer than " + maxLen + " (got " + s.length() + " characters)");
+        }
+
+        return s;
     }
 
     public void writeString(CharSequence str) {
@@ -278,6 +289,28 @@ public class ByteMessage extends ByteBuf {
             throw new StackOverflowError("BitSet too large (expected " + size + " got " + bits.size() + ")");
         }
         buf.writeBytes(Arrays.copyOf(bits.toByteArray(), (size + 8) >> 3));
+    }
+
+    public PlayerPublicKey readPublicKey() {
+        if (buf.readBoolean()) {
+            return new PlayerPublicKey(readLong(), readArray(512), readArray(4096));
+        }
+
+        return null;
+    }
+
+    public byte[] readArray() {
+        return readArray(this.buf.readableBytes());
+    }
+
+    public byte[] readArray(int limit) {
+        int len = readVarInt();
+        if (len > limit) {
+            throw new DecoderException("Cannot receive byte array longer than " + limit + " (got " + len + " bytes)");
+        }
+        byte[] ret = new byte[len];
+        this.buf.readBytes(ret);
+        return ret;
     }
 
     /* Delegated methods */
