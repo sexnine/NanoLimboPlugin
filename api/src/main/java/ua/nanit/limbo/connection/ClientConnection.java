@@ -212,7 +212,7 @@ public class ClientConnection extends ChannelInboundHandlerAdapter {
 
         writePacket(server.getPacketSnapshots().getPacketRegistryData());
 
-        sendPacket(PacketSnapshots.PACKET_FINISH_CONFIGURATION);
+        sendPacket(server.getPacketSnapshots().getPacketFinishConfiguration());
     }
 
     public void onKnownPacksReceived() {

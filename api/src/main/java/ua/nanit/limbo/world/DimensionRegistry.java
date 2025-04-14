@@ -253,7 +253,7 @@ public final class DimensionRegistry {
     }
 
     private CompoundBinaryTag readCompoundBinaryTag(String resPath) throws IOException {
-        try (InputStream in = server.getClass().getResourceAsStream(resPath)) {
+        try (InputStream in = classLoader.getResourceAsStream(resPath)) {
             return BinaryTagIO.unlimitedReader().read(in, BinaryTagIO.Compression.GZIP);
         }
     }
