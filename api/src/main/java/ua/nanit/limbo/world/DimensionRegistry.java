@@ -14,42 +14,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package ua.nanit.limbo.world;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.stream.Collectors;
 
 import net.kyori.adventure.nbt.BinaryTagIO;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.nbt.ListBinaryTag;
-import net.kyori.adventure.nbt.TagStringIO;
-import ua.nanit.limbo.server.LimboServer;
 import ua.nanit.limbo.server.Log;
-
-import java.io.IOException;
-import java.io.InputStream;
 
 public final class DimensionRegistry {
 
     private final ClassLoader classLoader;
-
     private Dimension defaultDimension_1_16;
     private Dimension defaultDimension_1_16_2;
     private Dimension defaultDimension_1_17;
     private Dimension defaultDimension_1_18_2;
-
     private Dimension dimension_1_20_5;
     private Dimension dimension_1_21;
     private Dimension dimension_1_21_2;
     private Dimension dimension_1_21_4;
     private Dimension dimension_1_21_5;
-
     private CompoundBinaryTag codec_1_16;
     private CompoundBinaryTag codec_1_16_2;
     private CompoundBinaryTag codec_1_17;
@@ -63,7 +49,6 @@ public final class DimensionRegistry {
     private CompoundBinaryTag codec_1_21_2;
     private CompoundBinaryTag codec_1_21_4;
     private CompoundBinaryTag codec_1_21_5;
-
     private CompoundBinaryTag tags_1_20_5;
     private CompoundBinaryTag tags_1_21;
     private CompoundBinaryTag tags_1_21_2;
@@ -183,25 +168,25 @@ public final class DimensionRegistry {
     }
 
     public void load(String def) throws IOException {
-        codec_1_16 = readCompoundBinaryTag("/dimension/codec_1_16.nbt");
-        codec_1_16_2 = readCompoundBinaryTag("/dimension/codec_1_16_2.nbt");
-        codec_1_17 = readCompoundBinaryTag("/dimension/codec_1_17.nbt");
-        codec_1_18_2 = readCompoundBinaryTag("/dimension/codec_1_18_2.nbt");
-        codec_1_19 = readCompoundBinaryTag("/dimension/codec_1_19.nbt");
-        codec_1_19_1 = readCompoundBinaryTag("/dimension/codec_1_19_1.nbt");
-        codec_1_19_4 = readCompoundBinaryTag("/dimension/codec_1_19_4.nbt");
-        codec_1_20 = readCompoundBinaryTag("/dimension/codec_1_20.nbt");
-        codec_1_20_5 = readCompoundBinaryTag("/dimension/codec_1_20_5.nbt");
-        codec_1_21 = readCompoundBinaryTag("/dimension/codec_1_21.nbt");
-        codec_1_21_2 = readCompoundBinaryTag("/dimension/codec_1_21_2.nbt");
-        codec_1_21_4 = readCompoundBinaryTag("/dimension/codec_1_21_4.nbt");
-        codec_1_21_5 = readCompoundBinaryTag("/dimension/codec_1_21_5.nbt");
+        codec_1_16 = readCompoundBinaryTag("dimension/codec_1_16.nbt");
+        codec_1_16_2 = readCompoundBinaryTag("dimension/codec_1_16_2.nbt");
+        codec_1_17 = readCompoundBinaryTag("dimension/codec_1_17.nbt");
+        codec_1_18_2 = readCompoundBinaryTag("dimension/codec_1_18_2.nbt");
+        codec_1_19 = readCompoundBinaryTag("dimension/codec_1_19.nbt");
+        codec_1_19_1 = readCompoundBinaryTag("dimension/codec_1_19_1.nbt");
+        codec_1_19_4 = readCompoundBinaryTag("dimension/codec_1_19_4.nbt");
+        codec_1_20 = readCompoundBinaryTag("dimension/codec_1_20.nbt");
+        codec_1_20_5 = readCompoundBinaryTag("dimension/codec_1_20_5.nbt");
+        codec_1_21 = readCompoundBinaryTag("dimension/codec_1_21.nbt");
+        codec_1_21_2 = readCompoundBinaryTag("dimension/codec_1_21_2.nbt");
+        codec_1_21_4 = readCompoundBinaryTag("dimension/codec_1_21_4.nbt");
+        codec_1_21_5 = readCompoundBinaryTag("dimension/codec_1_21_5.nbt");
 
-        tags_1_20_5 = readCompoundBinaryTag("/dimension/tags_1_20_5.nbt");
-        tags_1_21 = readCompoundBinaryTag("/dimension/tags_1_21.nbt");
-        tags_1_21_2 = readCompoundBinaryTag("/dimension/tags_1_21_2.nbt");
-        tags_1_21_4 = readCompoundBinaryTag("/dimension/tags_1_21_4.nbt");
-        tags_1_21_5 = readCompoundBinaryTag("/dimension/tags_1_21_5.nbt");
+        tags_1_20_5 = readCompoundBinaryTag("dimension/tags_1_20_5.nbt");
+        tags_1_21 = readCompoundBinaryTag("dimension/tags_1_21.nbt");
+        tags_1_21_2 = readCompoundBinaryTag("dimension/tags_1_21_2.nbt");
+        tags_1_21_4 = readCompoundBinaryTag("dimension/tags_1_21_4.nbt");
+        tags_1_21_5 = readCompoundBinaryTag("dimension/tags_1_21_5.nbt");
 
         defaultDimension_1_16 = getLegacyDimension(def);
         defaultDimension_1_16_2 = getModernDimension(def, codec_1_16_2);
@@ -257,4 +242,5 @@ public final class DimensionRegistry {
             return BinaryTagIO.unlimitedReader().read(in, BinaryTagIO.Compression.GZIP);
         }
     }
+
 }
