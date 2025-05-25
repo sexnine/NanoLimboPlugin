@@ -31,7 +31,10 @@ subprojects {
         testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.12.1'
 
         implementation 'org.spongepowered:configurate-yaml:4.2.0'
-        implementation 'io.netty:netty-all:4.2.0.Final'
+        implementation 'io.netty:netty-all:4.2.1.Final'
+        implementation "net.kyori:adventure-text-serializer-plain:4.21.0"
+        implementation "net.kyori:adventure-text-serializer-gson:4.21.0"
+        implementation "net.kyori:adventure-text-serializer-legacy:4.21.0"
         implementation 'net.kyori:adventure-nbt:4.19.0'
         implementation 'com.grack:nanojson:1.8'
         implementation 'com.google.code.gson:gson:2.12.1'
@@ -39,6 +42,17 @@ subprojects {
 
     shadowJar {
         from 'LICENSE'
+        minimize()
+        relocate 'io.netty', 'ua.nanit.shaded.io.netty'
+        relocate 'io.leangen', 'ua.nanit.shaded.io.leangen'
+        relocate 'com.google.errorprone', 'ua.nanit.shaded.com.google.errorprone'
+        relocate 'com.google.gson', 'ua.nanit.shaded.com.google.gson'
+        relocate 'com.grack.nanojson', 'ua.nanit.shaded.com.grack.nanojson'
+        relocate 'net.kyori.adventure', 'ua.nanit.shaded.net.kyori.adventure'
+        relocate 'net.kyori.examination', 'ua.nanit.shaded.net.kyori.examination'
+        relocate 'net.kyori.option', 'ua.nanit.shaded.net.kyori.option'
+        relocate 'org.spongepowered.configurate', 'ua.nanit.shaded.org.spongepowered.configurate'
+        relocate 'revxrsal.commands', 'ua.nanit.shaded.revxrsal.commands'
         minimize()
     }
 
