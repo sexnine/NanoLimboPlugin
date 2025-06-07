@@ -2,16 +2,18 @@ plugins {
     id 'java'
     id 'com.gradleup.shadow' version '8.3.6'
     id 'com.github.gmazzo.buildconfig' version '3.1.0'
+    id 'maven-publish'
 }
 
 allprojects {
     group 'ua.nanit'
-    version '1.0.14'
+    version = System.getenv("RELEASE_VERSION") ?: '1.0.14'
 }
 
 subprojects {
     apply plugin: 'java'
     apply plugin: 'com.gradleup.shadow'
+    apply plugin: 'maven-publish'
 
     compileJava {
         options.encoding = "UTF-8"
@@ -58,5 +60,31 @@ subprojects {
 
     test {
         useJUnitPlatform()
+    }
+
+    task sourcesJar(type: Jar) {
+        from sourceSets.main.allSource
+        archiveClassifier.set('sources')
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                groupId = "xyz.sexnine.limbo"
+
+                from components.java
+                artifact sourcesJar
+            }
+        }
+        repositories {
+            maven {
+                name = "GitHubPackages"
+                url = uri("https://maven.pkg.github.com/sexnine/NanoLimboPlugin")
+                credentials {
+                    username = System.getenv("GITHUB_ACTOR")
+                    password = System.getenv("GITHUB_TOKEN")
+                }
+            }
+        }
     }
 }
